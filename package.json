@@ -8,10 +8,12 @@
   },
   "homepage": "http://gpii.net/",
   "scripts": {
+    "build:dev": "xcodebuild -configuration Debug build && mv build/Debug/libMorphicMacOS.dylib build/Debug/MorphicMacOS.node",
+    "build": "xcodebuild -configuration Release build && mv build/Release/libMorphicMacOS.dylib build/Debug/MorphicMacOS.node",
     "test": "exit 0"
   },
   "dependencies": {
-    "gpii-universal": "JavierJF/universal#GPII-3810"
+    "gpii-universal": "0.3.0-dev.20191211T142911Z.0af24fabe"
   },
   "os": [
     "darwin"

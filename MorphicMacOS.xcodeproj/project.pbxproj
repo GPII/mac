@@ -1,0 +1,376 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		9D2EE02623E88F3500F2F1D1 /* NAPIValueCompatible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D2EE02523E88F3500F2F1D1 /* NAPIValueCompatible.swift */; };
+		9D2EE02A23E8969700F2F1D1 /* NAPIValueType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D2EE02923E8969700F2F1D1 /* NAPIValueType.swift */; };
+		9D2EE03423E8FC9F00F2F1D1 /* NAPIFunctionHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D2EE03323E8FC9F00F2F1D1 /* NAPIFunctionHelpers.swift */; };
+		9D2EE03623E908AB00F2F1D1 /* NAPIJavaScriptError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D2EE03523E908AB00F2F1D1 /* NAPIJavaScriptError.swift */; };
+		9DCE644623BA970200243A18 /* MorphicMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 9DCE644523BA970200243A18 /* MorphicMacOS.h */; };
+		9DCE644823BA970200243A18 /* MorphicMacOS.m in Sources */ = {isa = PBXBuildFile; fileRef = 9DCE644723BA970200243A18 /* MorphicMacOS.m */; };
+		9DCE645023BA982D00243A18 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DCE644F23BA982D00243A18 /* Main.swift */; };
+		9DCE646223BAA8A300243A18 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 9DCE646123BAA8A300243A18 /* main.c */; };
+		9DCE646623BD863900243A18 /* NAPIProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DCE646523BD863900243A18 /* NAPIProperty.swift */; };
+		9DCE646823BD8DBE00243A18 /* NAPIValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DCE646723BD8DBE00243A18 /* NAPIValue.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		9D2EE02523E88F3500F2F1D1 /* NAPIValueCompatible.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPIValueCompatible.swift; sourceTree = "<group>"; };
+		9D2EE02923E8969700F2F1D1 /* NAPIValueType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPIValueType.swift; sourceTree = "<group>"; };
+		9D2EE03323E8FC9F00F2F1D1 /* NAPIFunctionHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPIFunctionHelpers.swift; sourceTree = "<group>"; };
+		9D2EE03523E908AB00F2F1D1 /* NAPIJavaScriptError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPIJavaScriptError.swift; sourceTree = "<group>"; };
+		9DCE644223BA970200243A18 /* libMorphicMacOS.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libMorphicMacOS.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9DCE644523BA970200243A18 /* MorphicMacOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MorphicMacOS.h; sourceTree = "<group>"; };
+		9DCE644723BA970200243A18 /* MorphicMacOS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MorphicMacOS.m; sourceTree = "<group>"; };
+		9DCE644E23BA982C00243A18 /* MorphicMacOS-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MorphicMacOS-Bridging-Header.h"; sourceTree = "<group>"; };
+		9DCE644F23BA982D00243A18 /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
+		9DCE645A23BA9DB700243A18 /* node_api.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = node_api.h; sourceTree = "<group>"; };
+		9DCE645B23BA9DBF00243A18 /* node_api_types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = node_api_types.h; sourceTree = "<group>"; };
+		9DCE645E23BAA1CC00243A18 /* js_native_api.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = js_native_api.h; sourceTree = "<group>"; };
+		9DCE645F23BAA20200243A18 /* js_native_api_types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = js_native_api_types.h; sourceTree = "<group>"; };
+		9DCE646123BAA8A300243A18 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		9DCE646523BD863900243A18 /* NAPIProperty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPIProperty.swift; sourceTree = "<group>"; };
+		9DCE646723BD8DBE00243A18 /* NAPIValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPIValue.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		9DCE644023BA970200243A18 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		9DCE643923BA970200243A18 = {
+			isa = PBXGroup;
+			children = (
+				9DCE644423BA970200243A18 /* MorphicMacOS */,
+				9DCE644323BA970200243A18 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		9DCE644323BA970200243A18 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9DCE644223BA970200243A18 /* libMorphicMacOS.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9DCE644423BA970200243A18 /* MorphicMacOS */ = {
+			isa = PBXGroup;
+			children = (
+				9DCE645423BA99E500243A18 /* N-API */,
+				9DCE644523BA970200243A18 /* MorphicMacOS.h */,
+				9DCE644723BA970200243A18 /* MorphicMacOS.m */,
+				9DCE646123BAA8A300243A18 /* main.c */,
+				9DCE644F23BA982D00243A18 /* Main.swift */,
+				9DCE644E23BA982C00243A18 /* MorphicMacOS-Bridging-Header.h */,
+			);
+			path = MorphicMacOS;
+			sourceTree = "<group>";
+		};
+		9DCE645423BA99E500243A18 /* N-API */ = {
+			isa = PBXGroup;
+			children = (
+				9DCE645523BA99EE00243A18 /* include */,
+				9D2EE03323E8FC9F00F2F1D1 /* NAPIFunctionHelpers.swift */,
+				9D2EE03523E908AB00F2F1D1 /* NAPIJavaScriptError.swift */,
+				9DCE646523BD863900243A18 /* NAPIProperty.swift */,
+				9DCE646723BD8DBE00243A18 /* NAPIValue.swift */,
+				9D2EE02923E8969700F2F1D1 /* NAPIValueType.swift */,
+				9D2EE02523E88F3500F2F1D1 /* NAPIValueCompatible.swift */,
+			);
+			path = "N-API";
+			sourceTree = "<group>";
+		};
+		9DCE645523BA99EE00243A18 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				9DCE645E23BAA1CC00243A18 /* js_native_api.h */,
+				9DCE645F23BAA20200243A18 /* js_native_api_types.h */,
+				9DCE645A23BA9DB700243A18 /* node_api.h */,
+				9DCE645B23BA9DBF00243A18 /* node_api_types.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		9DCE643E23BA970200243A18 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9DCE644623BA970200243A18 /* MorphicMacOS.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		9DCE644123BA970200243A18 /* MorphicMacOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9DCE644B23BA970200243A18 /* Build configuration list for PBXNativeTarget "MorphicMacOS" */;
+			buildPhases = (
+				9DCE643E23BA970200243A18 /* Headers */,
+				9DCE643F23BA970200243A18 /* Sources */,
+				9DCE644023BA970200243A18 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MorphicMacOS;
+			productName = MorphicMacOS;
+			productReference = 9DCE644223BA970200243A18 /* libMorphicMacOS.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		9DCE643A23BA970200243A18 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1130;
+				ORGANIZATIONNAME = "Raising the Floor -- US Inc.";
+				TargetAttributes = {
+					9DCE644123BA970200243A18 = {
+						CreatedOnToolsVersion = 11.3;
+						LastSwiftMigration = 1130;
+					};
+				};
+			};
+			buildConfigurationList = 9DCE643D23BA970200243A18 /* Build configuration list for PBXProject "MorphicMacOS" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 9DCE643923BA970200243A18;
+			productRefGroup = 9DCE644323BA970200243A18 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				9DCE644123BA970200243A18 /* MorphicMacOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		9DCE643F23BA970200243A18 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9DCE646623BD863900243A18 /* NAPIProperty.swift in Sources */,
+				9D2EE03423E8FC9F00F2F1D1 /* NAPIFunctionHelpers.swift in Sources */,
+				9DCE645023BA982D00243A18 /* Main.swift in Sources */,
+				9D2EE03623E908AB00F2F1D1 /* NAPIJavaScriptError.swift in Sources */,
+				9DCE644823BA970200243A18 /* MorphicMacOS.m in Sources */,
+				9DCE646823BD8DBE00243A18 /* NAPIValue.swift in Sources */,
+				9D2EE02623E88F3500F2F1D1 /* NAPIValueCompatible.swift in Sources */,
+				9D2EE02A23E8969700F2F1D1 /* NAPIValueType.swift in Sources */,
+				9DCE646223BAA8A300243A18 /* main.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		9DCE644923BA970200243A18 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		9DCE644A23BA970200243A18 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		9DCE644C23BA970200243A18 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = lib;
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				OTHER_LDFLAGS = (
+					"-undefined",
+					dynamic_lookup,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "MorphicMacOS/MorphicMacOS-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.2;
+			};
+			name = Debug;
+		};
+		9DCE644D23BA970200243A18 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = lib;
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				OTHER_LDFLAGS = (
+					"-undefined",
+					dynamic_lookup,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "MorphicMacOS/MorphicMacOS-Bridging-Header.h";
+				SWIFT_VERSION = 4.2;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		9DCE643D23BA970200243A18 /* Build configuration list for PBXProject "MorphicMacOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9DCE644923BA970200243A18 /* Debug */,
+				9DCE644A23BA970200243A18 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9DCE644B23BA970200243A18 /* Build configuration list for PBXNativeTarget "MorphicMacOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9DCE644C23BA970200243A18 /* Debug */,
+				9DCE644D23BA970200243A18 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 9DCE643A23BA970200243A18 /* Project object */;
+}
