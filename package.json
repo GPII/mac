@@ -14,7 +14,7 @@
     "test": "exit 0"
   },
   "dependencies": {
-    "gpii-universal": "0.3.0-dev.20191211T142911Z.0af24fabe"
+    "gpii-universal": "git+https://github.com/christopher-rtf/universal.git#GPII-4253"
   },
   "os": [
     "darwin"
