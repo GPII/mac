@@ -24,61 +24,30 @@ public class NAPIProperty {
     /* createMethodProperty: 0 to 3 parameter varieties (without return type) */
     // NOTE: we MUST support up to 'maximumArgumentsInNativeFunctions' parameters (from NAPIFunctionHelpers)
 
-    public static func createMethodProperty(env: napi_env, name: String, method: @escaping () throws -> Void) -> NAPIProperty? {
+    public static func createMethodProperty(env: napi_env, name: String, method: @escaping () throws -> Void) -> NAPIProperty {
         let swiftBridgeFunction = createSwiftBridgeFunction(method: method)
-        
         let napiArgumentTypes: [NAPIValueType] = []
 
         return createMethodProperty(env: env, name: name, swiftBridgeFunction: swiftBridgeFunction, napiArgumentTypes: napiArgumentTypes)
     }
     //
-    public static func createMethodProperty<T0: NAPIValueCompatible>(env: napi_env, name: String, method: @escaping (_ arg0: T0) throws -> Void) -> NAPIProperty? {
+    public static func createMethodProperty<T0: NAPIValueCompatible>(env: napi_env, name: String, method: @escaping (_ arg0: T0) throws -> Void) -> NAPIProperty {
         let swiftBridgeFunction = createSwiftBridgeFunction(method: method)
+        let napiArgumentTypes: [NAPIValueType] = [T0.napiValueType]
         
-        guard let arg0NAPIValueType = NAPIValueType.getNAPIValueCompatibleTypeFor(nativeType: T0.self) else {
-            // unsupported type; programming error
-            fatalError()
-        }
-        //
-        let napiArgumentTypes: [NAPIValueType] = [arg0NAPIValueType]
-
         return createMethodProperty(env: env, name: name, swiftBridgeFunction: swiftBridgeFunction, napiArgumentTypes: napiArgumentTypes)
     }
     //
-    public static func createMethodProperty<T0: NAPIValueCompatible, T1: NAPIValueCompatible>(env: napi_env, name: String, method: @escaping (_ arg0: T0, _ arg1: T1) throws -> Void) -> NAPIProperty? {
+    public static func createMethodProperty<T0: NAPIValueCompatible, T1: NAPIValueCompatible>(env: napi_env, name: String, method: @escaping (_ arg0: T0, _ arg1: T1) throws -> Void) -> NAPIProperty {
         let swiftBridgeFunction = createSwiftBridgeFunction(method: method)
+        let napiArgumentTypes: [NAPIValueType] = [T0.napiValueType, T1.napiValueType]
         
-        guard let arg0NAPIValueType = NAPIValueType.getNAPIValueCompatibleTypeFor(nativeType: T0.self) else {
-            // unsupported type; programming error
-            fatalError()
-        }
-        guard let arg1NAPIValueType = NAPIValueType.getNAPIValueCompatibleTypeFor(nativeType: T1.self) else {
-            // unsupported type; programming error
-            fatalError()
-        }
-        //
-        let napiArgumentTypes: [NAPIValueType] = [arg0NAPIValueType, arg1NAPIValueType]
-
         return createMethodProperty(env: env, name: name, swiftBridgeFunction: swiftBridgeFunction, napiArgumentTypes: napiArgumentTypes)
     }
     //
-    public static func createMethodProperty<T0: NAPIValueCompatible, T1: NAPIValueCompatible, T2: NAPIValueCompatible>(env: napi_env, name: String, method: @escaping (_ arg0: T0, _ arg1: T1, _ arg2: T2) throws -> Void) -> NAPIProperty? {
+    public static func createMethodProperty<T0: NAPIValueCompatible, T1: NAPIValueCompatible, T2: NAPIValueCompatible>(env: napi_env, name: String, method: @escaping (_ arg0: T0, _ arg1: T1, _ arg2: T2) throws -> Void) -> NAPIProperty {
         let swiftBridgeFunction = createSwiftBridgeFunction(method: method)
-        
-        guard let arg0NAPIValueType = NAPIValueType.getNAPIValueCompatibleTypeFor(nativeType: T0.self) else {
-            // unsupported type; programming error
-            fatalError()
-        }
-        guard let arg1NAPIValueType = NAPIValueType.getNAPIValueCompatibleTypeFor(nativeType: T1.self) else {
-            // unsupported type; programming error
-            fatalError()
-        }
-        guard let arg2NAPIValueType = NAPIValueType.getNAPIValueCompatibleTypeFor(nativeType: T2.self) else {
-            // unsupported type; programming error
-            fatalError()
-        }
-        //
-        let napiArgumentTypes: [NAPIValueType] = [arg0NAPIValueType, arg1NAPIValueType, arg2NAPIValueType]
+        let napiArgumentTypes: [NAPIValueType] = [T0.napiValueType, T1.napiValueType, T2.napiValueType]
 
         return createMethodProperty(env: env, name: name, swiftBridgeFunction: swiftBridgeFunction, napiArgumentTypes: napiArgumentTypes)
     }
@@ -86,87 +55,36 @@ public class NAPIProperty {
     /* createMethodProperty: 0 to 3 parameter varieties (with return type) */
     // NOTE: we MUST support up to 'maximumArgumentsInNativeFunctions' parameters (from NAPIFunctionHelpers)
 
-    public static func createMethodProperty<TReturn: NAPIValueCompatible>(env: napi_env, name: String, method: @escaping () throws -> TReturn) -> NAPIProperty? {
+    public static func createMethodProperty<TReturn: NAPIValueCompatible>(env: napi_env, name: String, method: @escaping () throws -> TReturn) -> NAPIProperty {
         let swiftBridgeFunction = createSwiftBridgeFunction(method: method)
-        
         let napiArgumentTypes: [NAPIValueType] = []
-        
-        guard let napiReturnType: NAPIValueType = NAPIValueType.getNAPIValueCompatibleTypeFor(nativeType: TReturn.self) else {
-            // unsupported type; programming error
-            fatalError()
-        }
 
-        return createMethodProperty(env: env, name: name, swiftBridgeFunction: swiftBridgeFunction, napiArgumentTypes: napiArgumentTypes, napiReturnType: napiReturnType)
+        return createMethodProperty(env: env, name: name, swiftBridgeFunction: swiftBridgeFunction, napiArgumentTypes: napiArgumentTypes, napiReturnType: TReturn.napiValueType)
     }
     //
-    public static func createMethodProperty<T0: NAPIValueCompatible, TReturn: NAPIValueCompatible>(env: napi_env, name: String, method: @escaping (_ arg0: T0) throws -> TReturn) -> NAPIProperty? {
+    public static func createMethodProperty<T0: NAPIValueCompatible, TReturn: NAPIValueCompatible>(env: napi_env, name: String, method: @escaping (_ arg0: T0) throws -> TReturn) -> NAPIProperty {
         let swiftBridgeFunction = createSwiftBridgeFunction(method: method)
-        
-        guard let arg0NAPIValueType = NAPIValueType.getNAPIValueCompatibleTypeFor(nativeType: T0.self) else {
-            // unsupported type; programming error
-            fatalError()
-        }
-        //
-        let napiArgumentTypes: [NAPIValueType] = [arg0NAPIValueType]
+        let napiArgumentTypes: [NAPIValueType] = [T0.napiValueType]
 
-        guard let napiReturnType: NAPIValueType = NAPIValueType.getNAPIValueCompatibleTypeFor(nativeType: TReturn.self) else {
-            // unsupported type; programming error
-            fatalError()
-        }
-
-        return createMethodProperty(env: env, name: name, swiftBridgeFunction: swiftBridgeFunction, napiArgumentTypes: napiArgumentTypes, napiReturnType: napiReturnType)
+        return createMethodProperty(env: env, name: name, swiftBridgeFunction: swiftBridgeFunction, napiArgumentTypes: napiArgumentTypes, napiReturnType: TReturn.napiValueType)
     }
     //
-    public static func createMethodProperty<T0: NAPIValueCompatible, T1: NAPIValueCompatible, TReturn: NAPIValueCompatible>(env: napi_env, name: String, method: @escaping (_ arg0: T0, _ arg1: T1) throws -> TReturn) -> NAPIProperty? {
+    public static func createMethodProperty<T0: NAPIValueCompatible, T1: NAPIValueCompatible, TReturn: NAPIValueCompatible>(env: napi_env, name: String, method: @escaping (_ arg0: T0, _ arg1: T1) throws -> TReturn) -> NAPIProperty {
         let swiftBridgeFunction = createSwiftBridgeFunction(method: method)
-        
-        guard let arg0NAPIValueType = NAPIValueType.getNAPIValueCompatibleTypeFor(nativeType: T0.self) else {
-            // unsupported type; programming error
-            fatalError()
-        }
-        guard let arg1NAPIValueType = NAPIValueType.getNAPIValueCompatibleTypeFor(nativeType: T1.self) else {
-            // unsupported type; programming error
-            fatalError()
-        }
-        //
-        let napiArgumentTypes: [NAPIValueType] = [arg0NAPIValueType, arg1NAPIValueType]
+        let napiArgumentTypes: [NAPIValueType] = [T0.napiValueType, T1.napiValueType]
 
-        guard let napiReturnType: NAPIValueType = NAPIValueType.getNAPIValueCompatibleTypeFor(nativeType: TReturn.self) else {
-            // unsupported type; programming error
-            fatalError()
-        }
-
-        return createMethodProperty(env: env, name: name, swiftBridgeFunction: swiftBridgeFunction, napiArgumentTypes: napiArgumentTypes, napiReturnType: napiReturnType)
+        return createMethodProperty(env: env, name: name, swiftBridgeFunction: swiftBridgeFunction, napiArgumentTypes: napiArgumentTypes, napiReturnType: TReturn.napiValueType)
     }
     //
-    public static func createMethodProperty<T0: NAPIValueCompatible, T1: NAPIValueCompatible, T2: NAPIValueCompatible, TReturn: NAPIValueCompatible>(env: napi_env, name: String, method: @escaping (_ arg0: T0, _ arg1: T1, _ arg2: T2) throws -> TReturn) -> NAPIProperty? {
+    public static func createMethodProperty<T0: NAPIValueCompatible, T1: NAPIValueCompatible, T2: NAPIValueCompatible, TReturn: NAPIValueCompatible>(env: napi_env, name: String, method: @escaping (_ arg0: T0, _ arg1: T1, _ arg2: T2) throws -> TReturn) -> NAPIProperty {
         let swiftBridgeFunction = createSwiftBridgeFunction(method: method)
-        
-        guard let arg0NAPIValueType = NAPIValueType.getNAPIValueCompatibleTypeFor(nativeType: T0.self) else {
-            // unsupported type; programming error
-            fatalError()
-        }
-        guard let arg1NAPIValueType = NAPIValueType.getNAPIValueCompatibleTypeFor(nativeType: T1.self) else {
-            // unsupported type; programming error
-            fatalError()
-        }
-        guard let arg2NAPIValueType = NAPIValueType.getNAPIValueCompatibleTypeFor(nativeType: T2.self) else {
-            // unsupported type; programming error
-            fatalError()
-        }
-        //
-        let napiArgumentTypes: [NAPIValueType] = [arg0NAPIValueType, arg1NAPIValueType, arg2NAPIValueType]
+        let napiArgumentTypes: [NAPIValueType] = [T0.napiValueType, T1.napiValueType, T2.napiValueType]
 
-        guard let napiReturnType: NAPIValueType = NAPIValueType.getNAPIValueCompatibleTypeFor(nativeType: TReturn.self) else {
-            // unsupported type; programming error
-            fatalError()
-        }
-
-        return createMethodProperty(env: env, name: name, swiftBridgeFunction: swiftBridgeFunction, napiArgumentTypes: napiArgumentTypes, napiReturnType: napiReturnType)
+        return createMethodProperty(env: env, name: name, swiftBridgeFunction: swiftBridgeFunction, napiArgumentTypes: napiArgumentTypes, napiReturnType: TReturn.napiValueType)
     }
 
     // NOTE: this function is the master "createMethodProperty" function called by all the other "createMethodProperty" functions
-    fileprivate static func createMethodProperty(env: napi_env, name: String, swiftBridgeFunction: @escaping NAPISwiftBridgeFunction, napiArgumentTypes: [NAPIValueType], napiReturnType: NAPIValueType? = nil) -> NAPIProperty? {
+    fileprivate static func createMethodProperty(env: napi_env, name: String, swiftBridgeFunction: @escaping NAPISwiftBridgeFunction, napiArgumentTypes: [NAPIValueType], napiReturnType: NAPIValueType? = nil) -> NAPIProperty {
         let nameAsNapiValue = NAPIValue.create(env: env, nativeValue: name)
 
         let napiFunctionData = NAPIFunctionData(swiftBridgeFunction: swiftBridgeFunction, argumentTypes: napiArgumentTypes, returnType: napiReturnType)

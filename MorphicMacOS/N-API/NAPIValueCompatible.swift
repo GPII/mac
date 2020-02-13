@@ -10,12 +10,20 @@
 // Department of Education, and you should not assume endorsement by the
 // Federal Government.
 
+// NOTE: NAPIValueCompatible designates that a Swift type can be converted directly to and from a napi_value
 public protocol NAPIValueCompatible {
+    static var napiValueType: NAPIValueType { get }
 }
 
 extension Double : NAPIValueCompatible {
+    public static var napiValueType: NAPIValueType {
+        return .number
+    }
 }
 //
 extension String : NAPIValueCompatible {
+    public static var napiValueType: NAPIValueType {
+        return .string
+    }
 }
 

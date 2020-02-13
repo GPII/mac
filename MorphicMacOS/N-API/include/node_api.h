@@ -71,4 +71,8 @@ typedef struct {
 #define NAPI_MODULE(modname, regfunc)                                 \
   NAPI_MODULE_X(modname, regfunc, NULL, 0)  // NOLINT (readability/null_usage)
 
+
+
+
+
 #endif /* node_api_h */

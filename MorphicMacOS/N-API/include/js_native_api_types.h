@@ -18,6 +18,7 @@
 #ifndef js_native_api_types_h
 #define js_native_api_types_h
 
+#include <stdint.h>  // NOLINT(modernize-deprecated-headers)
 // JSVM API types are all opaque pointers for ABI stability
 // typedef undefined structs instead of void* for compile time type safety
 typedef struct napi_env__* napi_env;
@@ -97,5 +98,12 @@ typedef void (*napi_finalize)(napi_env env,
    napi_property_attributes attributes;
    void* data;
  } napi_property_descriptor;
+
+
+
+
+
+
+
 
 #endif /* js_native_api_types_h */

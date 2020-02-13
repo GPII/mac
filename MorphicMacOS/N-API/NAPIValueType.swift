@@ -15,18 +15,38 @@ public enum NAPIValueType {
     case string
     //
     case undefined
-}
-
-extension NAPIValueType {
-    static func getNAPIValueCompatibleTypeFor<T>(nativeType: T.Type) -> NAPIValueType? {
-        if T.self == Double.self {
-            return .number
-        } else if T.self == String.self {
-            return .string
-        } else {
-            // unsupported type
-            return nil
+    
+    public init?(napi_valuetype: napi_valuetype) {
+        switch napi_valuetype {
+        case napi_number:
+            self = .number
+        case napi_string:
+            self = .string
+        case napi_undefined:
+            self = .undefined
+        default:
+            return nil 
         }
+    }
+
+    public static func ==(lhs: NAPIValueType, rhs: NAPIValueType) -> Bool {
+        switch lhs {
+        case .number:
+            if case .number = rhs {
+                return true
+            }
+        case .string:
+            if case .string = rhs {
+                return true
+            }
+        case .undefined:
+            if case .undefined = rhs {
+                return true
+            }
+        }
+        
+        // if no matches were found, return false
+        return false
     }
 }
 

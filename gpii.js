@@ -1,7 +1,7 @@
 /*
  * GPII macOS Personalization Framework Node.js Bootstrap
  *
- * Copyright 2019 Raising the Floor -- US Inc. All rights reserved.
+ * Copyright 2020 Raising the Floor -- US Inc. All rights reserved.
  * Copyright 2012 OCAD University
  *
  * Licensed under the New BSD license. You may not use this file except in

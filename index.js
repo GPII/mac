@@ -1,7 +1,7 @@
 /*
  * GPII Universal Personalization Framework GPII macOS Index
  *
- * Copyright 2019 Raising the Floor -- US Inc. All rights reserved.
+ * Copyright 2020 Raising the Floor -- US Inc. All rights reserved.
  * Copyright 2014 Lucendo Development Ltd.
  *
  * Licensed under the New BSD license. You may not use this file except in
@@ -24,5 +24,10 @@
 "use strict";
 
 var fluid = require("gpii-universal");
+
+var gpii = fluid.registerNamespace("gpii");
+var macos = fluid.registerNamespace("gpii.macos");
+
+macos.native = require('./build/MorphicMacOS.node');
 
 module.exports = fluid;
