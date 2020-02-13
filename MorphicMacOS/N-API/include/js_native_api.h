@@ -51,6 +51,9 @@
 EXTERN_C_START
 
 // Methods to create Primitive types/Objects
+NAPI_EXTERN napi_status napi_create_array_with_length(napi_env env,
+                                                      size_t length,
+                                                      napi_value* result);
 NAPI_EXTERN napi_status napi_create_double(napi_env env,
                                            double value,
                                            napi_value* result);
@@ -81,11 +84,27 @@ NAPI_EXTERN napi_status napi_get_value_string_utf8(napi_env env,
                                                    size_t* result);
 
 // Methods to work with Objects
+NAPI_EXTERN napi_status napi_set_element(napi_env env,
+                                         napi_value object,
+                                         uint32_t index,
+                                         napi_value value);
+NAPI_EXTERN napi_status napi_get_element(napi_env env,
+                                         napi_value object,
+                                         uint32_t index,
+                                         napi_value* result);
 NAPI_EXTERN napi_status
 napi_define_properties(napi_env env,
                        napi_value object,
                        size_t property_count,
                        const napi_property_descriptor* properties);
+
+// Methods to work with Arrays
+NAPI_EXTERN napi_status napi_is_array(napi_env env,
+                                      napi_value value,
+                                      bool* result);
+NAPI_EXTERN napi_status napi_get_array_length(napi_env env,
+                                              napi_value value,
+                                              uint32_t* result);
 
 // Methods to work with napi_callbacks
 

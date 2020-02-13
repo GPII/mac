@@ -27,3 +27,8 @@ extension String : NAPIValueCompatible {
     }
 }
 
+extension Array : NAPIValueCompatible where Element: NAPIValueCompatible {
+    public static var napiValueType: NAPIValueType {
+        return .array(type: Element.napiValueType)
+    }
+}

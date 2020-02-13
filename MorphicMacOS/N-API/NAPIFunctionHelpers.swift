@@ -81,7 +81,7 @@ internal func napiFunctionTrampoline(_ env: napi_env!, _ info: napi_callback_inf
             // TODO: throw an error
             return nil
         }
-        let napiValueTypeOfArgument = NAPIValueType.getNAPIValueTypeOf(env: env, napiValue: argumentAsNapiValue)
+        let napiValueTypeOfArgument = NAPIValueType.getNAPIValueType(env: env, value: argumentAsNapiValue)
         
         // if the napiValueTypeOfArgument of the argument is 'undefined', we have encountered a filler argument (which means
         // that the caller did not provide enough arguments for the function
@@ -92,10 +92,23 @@ internal func napiFunctionTrampoline(_ env: napi_env!, _ info: napi_callback_inf
         }
                 
         // verify that the type of the passsed-in argument matches the strictly-typed native function argument type
-        guard napiValueTypeOfArgument == napiFunctionData.argumentTypes[index] else {
-            // type mismatch; cannot proceed
-            // TODO: throw an error
-            return nil
+        if napiValueTypeOfArgument == NAPIValueType.array(type: nil) {
+            // if the parameter is any typed array, an empty array from JavaScript is valid
+            if case .array(_) = napiFunctionData.argumentTypes[index] {
+                // an empty JavaScript array matches any typed Swift array
+                break
+            } else {
+                // an empty array does not match any other type
+                // TODO: throw a Type Mismatch error
+                return nil
+            }
+        } else {
+            // for any argument which is not an empty array, verify the strict typing
+            guard napiValueTypeOfArgument == napiFunctionData.argumentTypes[index] else {
+                // type mismatch; cannot proceed
+                // TODO: throw an error
+                return nil
+            }
         }
         
         // convert the napi_value to a NAPIValue type (and then use the NAPIValue to convert the napi_value to its corresponding native type respresentation)
@@ -107,8 +120,14 @@ internal func napiFunctionTrampoline(_ env: napi_env!, _ info: napi_callback_inf
             case .string:
                 let argumentAsString = try NAPIValue(env: env, napiValue: argumentAsNapiValue).asString()!
                 arguments.append(argumentAsString)
+            case .array(_):
+                let argumentAsArray = try NAPIValue(env: env, napiValue: argumentAsNapiValue, napiValueType: napiValueTypeOfArgument).asArray()!
+                arguments.append(argumentAsArray)
             case .undefined:
-                // this must be unreachable code
+                // this is an unsupported type (and should be unreachable code)
+                fatalError()
+            case .unsupported:
+                // this is an unsupported type (and should be unreachable code)
                 fatalError()
             }
         } catch {
@@ -134,21 +153,9 @@ internal func napiFunctionTrampoline(_ env: napi_env!, _ info: napi_callback_inf
     
     /* process the return value (if any) and return */
     
-    if let returnType = napiFunctionData.returnType {
-        // if the function has a return type, convert it to a napi_value now
-        switch returnType {
-        case .number:
-            let resultAsDouble = result as! Double
-            let resultAsNAPIValue = NAPIValue.create(env: env, nativeValue: resultAsDouble)
-            return resultAsNAPIValue.napiValue
-        case .string:
-            let resultAsString = result as! String
-            let resultAsNAPIValue = NAPIValue.create(env: env, nativeValue: resultAsString)
-            return resultAsNAPIValue.napiValue
-        case .undefined:
-            // this is an unsupported return type (and should be unreachable code)
-            fatalError()
-        }
+    if let returnType = napiFunctionData.returnType, let result = result {
+        let resultAsNAPIValue = NAPIValue.create(env: env, nativeValue: result, napiValueType: returnType)
+        return resultAsNAPIValue.napiValue
     } else {
         // no return type; return nil (which will effectively return an "undefined" value)
         return nil
