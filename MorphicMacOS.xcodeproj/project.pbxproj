@@ -18,7 +18,7 @@
 		9DCE646623BD863900243A18 /* NAPIProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DCE646523BD863900243A18 /* NAPIProperty.swift */; };
 		9DCE646823BD8DBE00243A18 /* NAPIValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DCE646723BD8DBE00243A18 /* NAPIValue.swift */; };
 		9DFCE56123F628B100300EC4 /* MorphicDisk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DFCE56023F628B100300EC4 /* MorphicDisk.swift */; };
-		9DFCE56623F6429E00300EC4 /* NAPIDiskFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DFCE56523F6429E00300EC4 /* NAPIDiskFunctions.swift */; };
+		CE4DEBD623F65E8000519CD9 /* NAPIDiskFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE4DEBD523F65E8000519CD9 /* NAPIDiskFunctions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,7 +39,7 @@
 		9DCE646523BD863900243A18 /* NAPIProperty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPIProperty.swift; sourceTree = "<group>"; };
 		9DCE646723BD8DBE00243A18 /* NAPIValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPIValue.swift; sourceTree = "<group>"; };
 		9DFCE56023F628B100300EC4 /* MorphicDisk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MorphicDisk.swift; sourceTree = "<group>"; };
-		9DFCE56523F6429E00300EC4 /* NAPIDiskFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPIDiskFunctions.swift; sourceTree = "<group>"; };
+		CE4DEBD523F65E8000519CD9 /* NAPIDiskFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPIDiskFunctions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,7 +112,7 @@
 		9DFCE55923F6275800300EC4 /* BridgeFunctions */ = {
 			isa = PBXGroup;
 			children = (
-				9DFCE56523F6429E00300EC4 /* NAPIDiskFunctions.swift */,
+				CE4DEBD523F65E8000519CD9 /* NAPIDiskFunctions.swift */,
 			);
 			path = BridgeFunctions;
 			sourceTree = "<group>";
@@ -206,12 +206,12 @@
 				9D2EE03423E8FC9F00F2F1D1 /* NAPIFunctionHelpers.swift in Sources */,
 				9DCE645023BA982D00243A18 /* Main.swift in Sources */,
 				9D2EE03623E908AB00F2F1D1 /* NAPIJavaScriptError.swift in Sources */,
+				CE4DEBD623F65E8000519CD9 /* NAPIDiskFunctions.swift in Sources */,
 				9DCE644823BA970200243A18 /* MorphicMacOS.m in Sources */,
 				9DCE646823BD8DBE00243A18 /* NAPIValue.swift in Sources */,
 				9D2EE02623E88F3500F2F1D1 /* NAPIValueCompatible.swift in Sources */,
 				9DFCE56123F628B100300EC4 /* MorphicDisk.swift in Sources */,
 				9D2EE02A23E8969700F2F1D1 /* NAPIValueType.swift in Sources */,
-				9DFCE56623F6429E00300EC4 /* NAPIDiskFunctions.swift in Sources */,
 				9DCE646223BAA8A300243A18 /* main.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
