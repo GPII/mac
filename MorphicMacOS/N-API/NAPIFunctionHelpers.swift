@@ -96,7 +96,6 @@ internal func napiFunctionTrampoline(_ env: napi_env!, _ info: napi_callback_inf
             // if the parameter is any typed array, an empty array from JavaScript is valid
             if case .array(_) = napiFunctionData.argumentTypes[index] {
                 // an empty JavaScript array matches any typed Swift array
-                break
             } else {
                 // an empty array does not match any other type
                 // TODO: throw a Type Mismatch error

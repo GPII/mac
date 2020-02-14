@@ -30,4 +30,6 @@ var macos = fluid.registerNamespace("gpii.macos");
 
 macos.native = require('./build/MorphicMacOS.node');
 
+require("./gpii/node_modules/MacOSUtilities/MacOSUtilities.js");
+
 module.exports = fluid;

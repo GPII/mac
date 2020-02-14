@@ -17,6 +17,8 @@
 		9DCE646223BAA8A300243A18 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 9DCE646123BAA8A300243A18 /* main.c */; };
 		9DCE646623BD863900243A18 /* NAPIProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DCE646523BD863900243A18 /* NAPIProperty.swift */; };
 		9DCE646823BD8DBE00243A18 /* NAPIValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DCE646723BD8DBE00243A18 /* NAPIValue.swift */; };
+		9DFCE56123F628B100300EC4 /* MorphicDisk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DFCE56023F628B100300EC4 /* MorphicDisk.swift */; };
+		9DFCE56623F6429E00300EC4 /* NAPIDiskFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DFCE56523F6429E00300EC4 /* NAPIDiskFunctions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +38,8 @@
 		9DCE646123BAA8A300243A18 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		9DCE646523BD863900243A18 /* NAPIProperty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPIProperty.swift; sourceTree = "<group>"; };
 		9DCE646723BD8DBE00243A18 /* NAPIValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPIValue.swift; sourceTree = "<group>"; };
+		9DFCE56023F628B100300EC4 /* MorphicDisk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MorphicDisk.swift; sourceTree = "<group>"; };
+		9DFCE56523F6429E00300EC4 /* NAPIDiskFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPIDiskFunctions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +72,8 @@
 		9DCE644423BA970200243A18 /* MorphicMacOS */ = {
 			isa = PBXGroup;
 			children = (
+				9DFCE55C23F627AB00300EC4 /* NativeClasses */,
+				9DFCE55923F6275800300EC4 /* BridgeFunctions */,
 				9DCE645423BA99E500243A18 /* N-API */,
 				9DCE644523BA970200243A18 /* MorphicMacOS.h */,
 				9DCE644723BA970200243A18 /* MorphicMacOS.m */,
@@ -101,6 +107,30 @@
 				9DCE645B23BA9DBF00243A18 /* node_api_types.h */,
 			);
 			path = include;
+			sourceTree = "<group>";
+		};
+		9DFCE55923F6275800300EC4 /* BridgeFunctions */ = {
+			isa = PBXGroup;
+			children = (
+				9DFCE56523F6429E00300EC4 /* NAPIDiskFunctions.swift */,
+			);
+			path = BridgeFunctions;
+			sourceTree = "<group>";
+		};
+		9DFCE55C23F627AB00300EC4 /* NativeClasses */ = {
+			isa = PBXGroup;
+			children = (
+				9DFCE55D23F6282C00300EC4 /* Disk */,
+			);
+			path = NativeClasses;
+			sourceTree = "<group>";
+		};
+		9DFCE55D23F6282C00300EC4 /* Disk */ = {
+			isa = PBXGroup;
+			children = (
+				9DFCE56023F628B100300EC4 /* MorphicDisk.swift */,
+			);
+			path = Disk;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -179,7 +209,9 @@
 				9DCE644823BA970200243A18 /* MorphicMacOS.m in Sources */,
 				9DCE646823BD8DBE00243A18 /* NAPIValue.swift in Sources */,
 				9D2EE02623E88F3500F2F1D1 /* NAPIValueCompatible.swift in Sources */,
+				9DFCE56123F628B100300EC4 /* MorphicDisk.swift in Sources */,
 				9D2EE02A23E8969700F2F1D1 /* NAPIValueType.swift in Sources */,
+				9DFCE56623F6429E00300EC4 /* NAPIDiskFunctions.swift in Sources */,
 				9DCE646223BAA8A300243A18 /* main.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -126,7 +126,7 @@ public class NAPIValue {
             }
         }
 
-        // NOTE: as a future optimization, we could capture the element type and avoid re-enumerating the array
+        // NOTE: as a future optimization, we could capture the element type (and avoid re-enumerating the array)
 //        let elementNapiValuetype = ...
 //        let result = NAPIValue(env: env, napiValue: arrayAsNapiValue, elementNapiValuetype: elementNapiValuetype)
 
