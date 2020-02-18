@@ -25,7 +25,10 @@ public func Init(env: napi_env!, exports: napi_value!) -> napi_value? {
     
     var napiPropertyDescriptors: [napi_property_descriptor] = []
 
-    // DiskFunctions (MorphicDisk)
+    // NAPIAudioFunctions (MorphicAudio)
+    napiPropertyDescriptors.append(contentsOf: NAPIAudioFunctions.getFunctionsAsPropertyDescriptors(env: env))
+
+    // NAPIDiskFunctions (MorphicDisk)
     napiPropertyDescriptors.append(contentsOf: NAPIDiskFunctions.getFunctionsAsPropertyDescriptors(env: env))
     
     status = napi_define_properties(env, exports, napiPropertyDescriptors.count, &napiPropertyDescriptors)
