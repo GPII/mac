@@ -113,6 +113,9 @@ internal func napiFunctionTrampoline(_ env: napi_env!, _ info: napi_callback_inf
         // convert the napi_value to a NAPIValue type (and then use the NAPIValue to convert the napi_value to its corresponding native type respresentation)
         do {
             switch napiValueTypeOfArgument {
+            case .boolean:
+                let argumentAsBool = try NAPIValue(env: env, napiValue: argumentAsNapiValue).asBool()!
+                arguments.append(argumentAsBool)
             case .number:
                 let argumentAsDouble = try NAPIValue(env: env, napiValue: argumentAsNapiValue).asDouble()!
                 arguments.append(argumentAsDouble)

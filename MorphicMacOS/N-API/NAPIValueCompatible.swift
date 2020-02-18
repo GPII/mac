@@ -15,6 +15,12 @@ public protocol NAPIValueCompatible {
     static var napiValueType: NAPIValueType { get }
 }
 
+extension Bool: NAPIValueCompatible {
+    public static var napiValueType: NAPIValueType {
+        return .boolean
+    }
+}
+//
 extension Double : NAPIValueCompatible {
     public static var napiValueType: NAPIValueType {
         return .number

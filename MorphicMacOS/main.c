@@ -10,9 +10,12 @@
 // Department of Education, and you should not assume endorsement by the
 // Federal Government.
 
-#include "node_api.h"
+// NOTE: we specify NAPI_VERSION 4 (for Node.js 10.16 or newer); for Node.js 12.11 or newer, we could use NAPI_VERSION 5 instead
+#define NAPI_VERSION 4
+#import "./N-API/include/node_api.h"
 
 // signature prototype for node.js addon's init function; implementation is in Main.swift
 napi_value Init(napi_env env, napi_value exports);
 
+// NOTE: the following line must be commented out when importing this library into a non-Node.js application
 NAPI_MODULE(NODE_GYP_MODULE_NAME, Init)

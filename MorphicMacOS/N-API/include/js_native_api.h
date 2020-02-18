@@ -50,6 +50,11 @@
 
 EXTERN_C_START
 
+// Getters for defined singletons
+NAPI_EXTERN napi_status napi_get_boolean(napi_env env,
+                                         bool value,
+                                         napi_value* result);
+
 // Methods to create Primitive types/Objects
 NAPI_EXTERN napi_status napi_create_array_with_length(napi_env env,
                                                       size_t length,
@@ -75,6 +80,9 @@ NAPI_EXTERN napi_status napi_typeof(napi_env env,
 NAPI_EXTERN napi_status napi_get_value_double(napi_env env,
                                               napi_value value,
                                               double* result);
+NAPI_EXTERN napi_status napi_get_value_bool(napi_env env,
+                                            napi_value value,
+                                            bool* result);
 
 // Copies UTF-8 encoded bytes from a string into a buffer.
 NAPI_EXTERN napi_status napi_get_value_string_utf8(napi_env env,

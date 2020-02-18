@@ -43,6 +43,8 @@ public class NAPIValue {
         }
         
         switch napiValueType {
+        case .boolean:
+            return createBoolean(env: env, nativeValue: nativeValue as! Bool)
         case .number:
             return createNumber(env: env, nativeValue: nativeValue as! Double)
         case .string:
@@ -62,7 +64,20 @@ public class NAPIValue {
             fatalError()
         }
     }
-    
+
+    private static func createBoolean(env: napi_env, nativeValue: Bool) -> NAPIValue {
+        var result: napi_value! = nil
+        
+        // NOTE: napi_get_boolean gets the JavaScript boolean singleton (true or false)
+        let status = napi_get_boolean(env, nativeValue, &result)
+        guard status == napi_ok else {
+            // TODO: check for JavaScript errors instead and throw them instead
+            fatalError()
+        }
+
+        return NAPIValue(env: env, napiValue: result)
+    }
+
     private static func createNumber(env: napi_env, nativeValue: Double) -> NAPIValue {
         var result: napi_value! = nil
         
@@ -137,6 +152,9 @@ public class NAPIValue {
     public func asNAPIValueCompatible() throws -> NAPIValueCompatible? {
         do {
             switch self.napiValueType {
+            case .boolean:
+                let value = try self.asBool()
+                return value
             case .number:
                 let value = try self.asDouble()
                 return value
@@ -160,9 +178,38 @@ public class NAPIValue {
         }
     }
 
+    public func asBool() throws -> Bool? {
+        do {
+            switch self.napiValueType {
+            case .boolean:
+                let valueAsBool = try self.convertNapiValueToBool()
+                return valueAsBool
+            case .number:
+                return nil
+            case .string:
+                return nil
+            case .array(_):
+                return nil
+            case .undefined:
+                return nil
+            case .unsupported:
+                return nil
+            }
+        } catch NAPIValueError.otherNapiError {
+            // TODO: handle this error...or convert it into a NAPIJavaScriptError and throw it instead
+            fatalError()
+        } catch {
+            // any other errors indicate a programming bug
+            fatalError()
+        }
+    }
+    
     public func asDouble() throws -> Double? {
         do {
             switch self.napiValueType {
+            case .boolean:
+                let valueAsBool = try self.convertNapiValueToBool()
+                return valueAsBool ? 1.0 : 0.0
             case .number:
                 let valueAsDouble = try self.convertNapiValueToDouble()
                 return valueAsDouble
@@ -188,6 +235,9 @@ public class NAPIValue {
     public func asString() throws -> String? {
         do {
             switch self.napiValueType {
+            case .boolean:
+                let valueAsBool = try self.convertNapiValueToBool()
+                return String(valueAsBool)
             case .number:
                 let valueAsDouble = try self.convertNapiValueToDouble()
                 return String(valueAsDouble)
@@ -213,6 +263,8 @@ public class NAPIValue {
     public func asArray() throws -> [NAPIValueCompatible]? {
         do {
             switch self.napiValueType {
+            case .boolean:
+                return nil
             case .number:
                 return nil
             case .string:
@@ -232,6 +284,29 @@ public class NAPIValue {
             // any other errors indicate a programming bug
             fatalError()
         }
+    }
+
+    private func convertNapiValueToBool() throws -> Bool {
+        guard self.napiValueType == .boolean else {
+            throw NAPIValueError.typeMismatch
+        }
+
+        var status: napi_status
+        var valueAsBoolean: Bool = false
+        //
+        status = napi_get_value_bool(self.env, self.napiValue, &valueAsBoolean)
+        guard status == napi_ok else {
+            if status == napi_boolean_expected {
+                // type mismatch
+                // TODO: we should still check for a JavaScript exception
+                throw NAPIValueError.typeMismatch
+            } else {
+                // TODO: we should check for a JavaScript exception
+                throw NAPIValueError.otherNapiError
+            }
+        }
+
+        return valueAsBoolean
     }
 
     private func convertNapiValueToDouble() throws -> Double {

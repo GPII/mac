@@ -13,4 +13,4 @@
 // dynamic node.js N-API headers (imported for use from Swift)
 // NOTE: we specify NAPI_VERSION 4 (for Node.js 10.16 or newer); for Node.js 12.11 or newer, we could use NAPI_VERSION 5 instead
 #define NAPI_VERSION 4
-#import "node_api.h"
+#import "./N-API/include/node_api.h"

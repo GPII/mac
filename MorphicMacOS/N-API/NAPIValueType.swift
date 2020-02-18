@@ -11,6 +11,7 @@
 // Federal Government.
 
 public indirect enum NAPIValueType {
+    case boolean
     case number
     case string
     //
@@ -24,6 +25,10 @@ public indirect enum NAPIValueType {
  
     public static func ==(lhs: NAPIValueType, rhs: NAPIValueType) -> Bool {
         switch lhs {
+        case .boolean:
+            if case .boolean = rhs {
+                return true
+            }
         case .number:
             if case .number = rhs {
                 return true
@@ -72,6 +77,8 @@ extension NAPIValueType {
         }
 
         switch valuetype {
+        case napi_boolean:
+            return .boolean
         case napi_number:
             return .number
         case napi_string:
