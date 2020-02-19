@@ -23,6 +23,12 @@ public class MorphicDisk {
     public static func openDirectory(path: String) {
         // open directory path in Finder
 
+        // NOTE: some of the below methods of opening up the drives may prompt the user for permission under Apple's latest (year 2019) OS security requirements; we may want to look at ways to suppress this prompt in applications consuming this library (including after such apps are updated in a way that changes their signature).  One possible option is installing a background helper app which never changes (or runs at a higher permission level that doesn't prompt for permission).
+        
+        // NOTE: NSWorkspace may not be available from node-ffi and similar, so we want to explore alternative methods too.
+        
+        // NOTE: some of the below methods of opening up the drives may not give us the finesse and control we want regarding how the Finder opens, if it's in three-pane vs. single-pane mode, etc.  More research and investigation is in order.
+        
 //        // METHOD 1:
 //        // NOTE: we open each folder separately so that we get multiple separate file view
 //        let pathsAsUrls: [URL] = [URL(fileURLWithPath: path, isDirectory: true)]

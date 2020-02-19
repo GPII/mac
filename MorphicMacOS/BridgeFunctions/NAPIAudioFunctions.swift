@@ -86,7 +86,7 @@ class NAPIAudioFunctions {
     
     public static func setAudioMuteState(muteState: Bool) {
         guard let defaultAudioOutputDeviceId = MorphicAudio.getDefaultAudioDeviceId() else {
-            // TODO: throw a JavaScript error if we cannot get the default audio device (instead of returning 0.5)
+            // TODO: throw a JavaScript error if we cannot get the default audio device (instead of returning false)
             NSLog("Could not find default audio output device")
             return
         }

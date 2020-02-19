@@ -22,6 +22,8 @@
 		9DE3F77E23FCD18400634AA2 /* MorphicProcess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE3F77D23FCD18400634AA2 /* MorphicProcess.swift */; };
 		9DE3F78223FCD59600634AA2 /* MorphicLaunchDaemonsAndAgents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE3F78123FCD59600634AA2 /* MorphicLaunchDaemonsAndAgents.swift */; };
 		9DE3F78623FCD92700634AA2 /* NAPIProcessFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE3F78523FCD92700634AA2 /* NAPIProcessFunctions.swift */; };
+		9DE3F78C23FCF4F000634AA2 /* MorphicLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE3F78B23FCF4F000634AA2 /* MorphicLanguage.swift */; };
+		9DE3F79023FCFA5A00634AA2 /* NAPILanguageFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE3F78F23FCFA5A00634AA2 /* NAPILanguageFunctions.swift */; };
 		9DFCE56123F628B100300EC4 /* MorphicDisk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DFCE56023F628B100300EC4 /* MorphicDisk.swift */; };
 		CE4DEBD623F65E8000519CD9 /* NAPIDiskFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE4DEBD523F65E8000519CD9 /* NAPIDiskFunctions.swift */; };
 /* End PBXBuildFile section */
@@ -48,6 +50,8 @@
 		9DE3F77D23FCD18400634AA2 /* MorphicProcess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MorphicProcess.swift; sourceTree = "<group>"; };
 		9DE3F78123FCD59600634AA2 /* MorphicLaunchDaemonsAndAgents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MorphicLaunchDaemonsAndAgents.swift; sourceTree = "<group>"; };
 		9DE3F78523FCD92700634AA2 /* NAPIProcessFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPIProcessFunctions.swift; sourceTree = "<group>"; };
+		9DE3F78B23FCF4F000634AA2 /* MorphicLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MorphicLanguage.swift; sourceTree = "<group>"; };
+		9DE3F78F23FCFA5A00634AA2 /* NAPILanguageFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPILanguageFunctions.swift; sourceTree = "<group>"; };
 		9DFCE56023F628B100300EC4 /* MorphicDisk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MorphicDisk.swift; sourceTree = "<group>"; };
 		CE4DEBD523F65E8000519CD9 /* NAPIDiskFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPIDiskFunctions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -136,12 +140,21 @@
 			path = Process;
 			sourceTree = "<group>";
 		};
+		9DE3F78A23FCF4E700634AA2 /* Language */ = {
+			isa = PBXGroup;
+			children = (
+				9DE3F78B23FCF4F000634AA2 /* MorphicLanguage.swift */,
+			);
+			path = Language;
+			sourceTree = "<group>";
+		};
 		9DFCE55923F6275800300EC4 /* BridgeFunctions */ = {
 			isa = PBXGroup;
 			children = (
 				9DC1604623FB7BCD003A3DB0 /* NAPIAudioFunctions.swift */,
 				CE4DEBD523F65E8000519CD9 /* NAPIDiskFunctions.swift */,
 				9DE3F78523FCD92700634AA2 /* NAPIProcessFunctions.swift */,
+				9DE3F78F23FCFA5A00634AA2 /* NAPILanguageFunctions.swift */,
 			);
 			path = BridgeFunctions;
 			sourceTree = "<group>";
@@ -149,6 +162,7 @@
 		9DFCE55C23F627AB00300EC4 /* NativeClasses */ = {
 			isa = PBXGroup;
 			children = (
+				9DE3F78A23FCF4E700634AA2 /* Language */,
 				9DE3F77923FCD14500634AA2 /* Process */,
 				9DC1604823FB7BE6003A3DB0 /* Audio */,
 				9DFCE55D23F6282C00300EC4 /* Disk */,
@@ -234,6 +248,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9DE3F77E23FCD18400634AA2 /* MorphicProcess.swift in Sources */,
+				9DE3F79023FCFA5A00634AA2 /* NAPILanguageFunctions.swift in Sources */,
 				9DCE646623BD863900243A18 /* NAPIProperty.swift in Sources */,
 				9D2EE03423E8FC9F00F2F1D1 /* NAPIFunctionHelpers.swift in Sources */,
 				9DCE645023BA982D00243A18 /* Main.swift in Sources */,
@@ -244,6 +259,7 @@
 				9DCE644823BA970200243A18 /* MorphicMacOS.m in Sources */,
 				9DC1605123FB7CB3003A3DB0 /* MorphicAudio.swift in Sources */,
 				9DC1604723FB7BCD003A3DB0 /* NAPIAudioFunctions.swift in Sources */,
+				9DE3F78C23FCF4F000634AA2 /* MorphicLanguage.swift in Sources */,
 				9DCE646823BD8DBE00243A18 /* NAPIValue.swift in Sources */,
 				9D2EE02623E88F3500F2F1D1 /* NAPIValueCompatible.swift in Sources */,
 				9DFCE56123F628B100300EC4 /* MorphicDisk.swift in Sources */,
