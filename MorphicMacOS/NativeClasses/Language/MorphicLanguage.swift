@@ -15,13 +15,20 @@ import Foundation
 // NOTE: the MorphicLanguage class contains the functionality used by Obj-C and Swift applications
 
 public class MorphicLanguage {
+    // MARK: - Functions to get/set the preferred languages
+    
+    public static func getPreferredLanguages() -> [String]? {
+        let preferredLanguages = CFLocaleCopyPreferredLanguages()
+        return preferredLanguages as? [String]
+    }
+    
     // NOTE: this function gets the property in the global domain (AnyApplication), but only for the current user
     public static func getAppleLanguagesFromGlobalDomain() -> [String]? {
         guard let propertyList = CFPreferencesCopyValue("AppleLanguages" as CFString, kCFPreferencesAnyApplication, kCFPreferencesCurrentUser, kCFPreferencesCurrentHost) else {
             return nil
         }
-        
         let result = propertyList as? [String]
+
         return result
     }
 
@@ -58,5 +65,55 @@ public class MorphicLanguage {
         // re-set the apple languages list (with the desired primary language now at the top of the list)
         let success = MorphicLanguage.setAppleLanguagesInGlobalDomain(appleLanguages)
         return success
+    }
+    
+    // MARK: - functions to translate locale/language/country codes to human-readable format
+    
+    // NOTE: getCurrentLocale() may not reflect changes in the current locale until after a reboot, etc.
+    public static func getCurrentLocale() -> CFLocale? {
+        return CFLocaleCopyCurrent()
+    }
+    
+    public static func createLocale(from languageAndCountryCode: String) -> CFLocale? {
+        guard let canonicalLocaleIdentifier = CFLocaleCreateCanonicalLocaleIdentifierFromString(kCFAllocatorDefault, languageAndCountryCode as CFString) else {
+            return nil
+        }
+        return createLocale(from: canonicalLocaleIdentifier)
+    }
+
+    public static func createLocale(from canonicalLocaleIdentifier: CFLocaleIdentifier) -> CFLocale? {
+        return CFLocaleCreate(kCFAllocatorDefault, canonicalLocaleIdentifier)
+    }
+    
+    public static func getLanguageAndCountryCode(for locale: CFLocale) -> String? {
+        guard let iso639LanguageCode = getIso639LanguageCode(for: locale),
+            let iso3166CountryCode = getIso3166CountryCode(for: locale) else {
+                return nil
+        }
+        return iso639LanguageCode + "-" + iso3166CountryCode
+    }
+    
+    public static func getIso639LanguageCode(for locale: CFLocale) -> String? {
+        guard let iso639LanguageCodeAsCFTypeRef = CFLocaleGetValue(locale, CFLocaleKey.languageCode) else {
+            return nil
+        }
+        let iso639LanguageCodeAsCFString = iso639LanguageCodeAsCFTypeRef as! CFString
+        return iso639LanguageCodeAsCFString as String
+    }
+
+    public static func getLanguageName(for iso639LanguageCode: String, translateTo translateToLocale: CFLocale) -> String {
+        return CFLocaleCopyDisplayNameForPropertyValue(translateToLocale, CFLocaleKey.languageCode, iso639LanguageCode as CFString) as String
+    }
+
+    public static func getIso3166CountryCode(for locale: CFLocale) -> String? {
+        guard let iso3166CountryCodeAsCFTypeRef = CFLocaleGetValue(locale, CFLocaleKey.countryCode) else {
+            return nil
+        }
+        let iso3166CountryCodeAsCFString = iso3166CountryCodeAsCFTypeRef as! CFString
+        return iso3166CountryCodeAsCFString as String
+    }
+    
+    public static func getCountryName(for iso3166CountryCode: String, translateTo translateToLocale: CFLocale) -> String {
+        return CFLocaleCopyDisplayNameForPropertyValue(translateToLocale, CFLocaleKey.countryCode, iso3166CountryCode as CFString) as String
     }
 }
