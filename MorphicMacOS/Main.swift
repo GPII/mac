@@ -31,6 +31,9 @@ public func Init(env: napi_env!, exports: napi_value!) -> napi_value? {
     // NAPIDiskFunctions (MorphicDisk)
     napiPropertyDescriptors.append(contentsOf: NAPIDiskFunctions.getFunctionsAsPropertyDescriptors(env: env))
     
+    // NAPIProcessFunctions (MorphicProcess)
+    napiPropertyDescriptors.append(contentsOf: NAPIProcessFunctions.getFunctionsAsPropertyDescriptors(env: env))
+    
     status = napi_define_properties(env, exports, napiPropertyDescriptors.count, &napiPropertyDescriptors)
     guard status == napi_ok else {
         return nil

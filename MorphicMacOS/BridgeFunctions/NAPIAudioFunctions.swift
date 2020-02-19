@@ -54,7 +54,7 @@ class NAPIAudioFunctions {
     
     public static func getAudioMuteState() -> Bool {
         guard let defaultAudioOutputDeviceId = MorphicAudio.getDefaultAudioDeviceId() else {
-            // TODO: throw a JavaScript error if we cannot get the default audio device (instead of returning 0.5)
+            // TODO: throw a JavaScript error if we cannot get the default audio device (instead of returning false)
             return false
         }
 
@@ -62,7 +62,8 @@ class NAPIAudioFunctions {
         guard let muteState = MorphicAudio.getMuteState(for: defaultAudioOutputDeviceId) else {
             // TODO: throw a JavaScript error instead
             fatalError("Could not get mute state of output device")
-            return false
+            // an alternate response would be to return false
+//            return false
         }
 
         return muteState
