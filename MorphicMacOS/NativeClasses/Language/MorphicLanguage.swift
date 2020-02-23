@@ -17,6 +17,7 @@ import Foundation
 public class MorphicLanguage {
     // MARK: - Functions to get/set the preferred languages
     
+    // NOTE: this function gets the current list of preferred languages (even if a key is not set in the global domain); this is the recommended approach
     public static func getPreferredLanguages() -> [String]? {
         let preferredLanguages = CFLocaleCopyPreferredLanguages()
         return preferredLanguages as? [String]
@@ -24,7 +25,7 @@ public class MorphicLanguage {
     
     // NOTE: this function gets the property in the global domain (AnyApplication), but only for the current user
     public static func getAppleLanguagesFromGlobalDomain() -> [String]? {
-        guard let propertyList = CFPreferencesCopyValue("AppleLanguages" as CFString, kCFPreferencesAnyApplication, kCFPreferencesCurrentUser, kCFPreferencesCurrentHost) else {
+        guard let propertyList = CFPreferencesCopyValue("AppleLanguages" as CFString, kCFPreferencesAnyApplication, kCFPreferencesCurrentUser, kCFPreferencesAnyHost) else {
             return nil
         }
         let result = propertyList as? [String]
@@ -34,20 +35,27 @@ public class MorphicLanguage {
 
     // NOTE: this function sets the property in the global domain (AnyApplication), but only for the current user
     public static func setAppleLanguagesInGlobalDomain(_ languages: [String]) -> Bool {
-        CFPreferencesSetValue("AppleLanguages" as CFString, languages as CFArray, kCFPreferencesAnyApplication, kCFPreferencesCurrentUser, kCFPreferencesCurrentHost)
-        let success = CFPreferencesSynchronize(kCFPreferencesAnyApplication, kCFPreferencesCurrentUser, kCFPreferencesCurrentHost)
+        CFPreferencesSetValue("AppleLanguages" as CFString, languages as CFArray, kCFPreferencesAnyApplication, kCFPreferencesCurrentUser, kCFPreferencesAnyHost)
+        let success = CFPreferencesSynchronize(kCFPreferencesAnyApplication, kCFPreferencesCurrentUser, kCFPreferencesAnyHost)
+        
         return success
     }
     
     public static func setPrimaryAppleLanguageInGlobalDomain(_ primaryLanguage: String) -> Bool {
-        // get our current list of Apple Languages
-        guard var appleLanguages = MorphicLanguage.getAppleLanguagesFromGlobalDomain() else {
-            return false
-        }
-//        // alternative approach
-//        guard var languages: [String] = UserDefaults.standard.array(forKey: "AppleLanguages") as? [String] else {
+//        // implementation option 1: get our current list of Apple Languages from the global domain (scoped to the current host)
+//        guard var appleLanguages = MorphicLanguage.getAppleLanguagesFromGlobalDomain() else {
+//            return false
+//        }
+        
+//        // implementation option 2: get our current list of Apple Languages from UserDefaults
+//        guard var appleLanguages: [String] = UserDefaults.standard.array(forKey: "AppleLanguages") as? [String] else {
 //            return
 //        }
+        
+        // implementation option 2: get our current list of Apple Languages from Core Foundation; this is the preferred method
+        guard var appleLanguages = MorphicLanguage.getPreferredLanguages() else {
+            return false
+        }
         
         // verify that the specified 'primaryLanguage' is contained within the list of installed languages
         guard appleLanguages.contains(primaryLanguage) == true else {

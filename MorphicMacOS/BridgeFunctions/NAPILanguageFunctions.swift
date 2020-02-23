@@ -39,7 +39,7 @@ class NAPILanguageFunctions {
     // MARK: - Swift NAPI bridge functions
 
     public static func getInstalledAppleLanguages() -> [String] {
-        guard let installedAppleLanguages = MorphicLanguage.getAppleLanguagesFromGlobalDomain() else {
+        guard let installedAppleLanguages = MorphicLanguage.getPreferredLanguages() else {
             // TODO: throw a JavaScript error if we cannot get the list of installed languages (instead of failing)
             fatalError("Could not retrieve list of installed languages")
         }
@@ -50,7 +50,12 @@ class NAPILanguageFunctions {
     }
     
     public static func getPrimaryInstalledAppleLanguage() -> String {
-        let installedAppleLanguages = getInstalledAppleLanguages()
+        // NOTE: we capture the list (sorted by preference...so that the first item in the list is the current (primary) language)
+        guard let installedAppleLanguages = MorphicLanguage.getPreferredLanguages() else {
+            // TODO: throw a JavaScript error if we cannot get the list of installed languages (instead of failing)
+            fatalError("Could not retrieve list of installed languages")
+        }
+
         return installedAppleLanguages.first!
     }
     
