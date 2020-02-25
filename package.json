@@ -8,8 +8,8 @@
   },
   "homepage": "http://gpii.net/",
   "scripts": {
-    "build": "xcodebuild -configuration Release build && mv build/Release/libMorphicMacOS.dylib build/MorphicMacOS.node",
-    "build:dev": "xcodebuild -configuration Debug build && mv build/Debug/libMorphicMacOS.dylib build/MorphicMacOS.node",
+    "build": "xcodebuild clean -configuration Release && xcodebuild build -configuration Release && mv build/Release/libMorphicMacOS.dylib build/MorphicMacOS.node",
+    "build:dev": "xcodebuild clean -configuration Release && xcodebuild build -configuration Debug && mv build/Debug/libMorphicMacOS.dylib build/MorphicMacOS.node",
     "postinstall": "npm run build",
     "test": "exit 0"
   },
