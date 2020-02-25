@@ -31,6 +31,9 @@ public func Init(env: napi_env!, exports: napi_value!) -> napi_value? {
     // NAPIDiskFunctions (MorphicDisk)
     napiPropertyDescriptors.append(contentsOf: NAPIDiskFunctions.getFunctionsAsPropertyDescriptors(env: env))
 
+    // NAPIDisplayFunctions (MorphicDisplay)
+    napiPropertyDescriptors.append(contentsOf: NAPIDisplayFunctions.getFunctionsAsPropertyDescriptors(env: env))
+
     // NAPILanguageFunctions (MorphicLanguage)
     napiPropertyDescriptors.append(contentsOf: NAPILanguageFunctions.getFunctionsAsPropertyDescriptors(env: env))
 

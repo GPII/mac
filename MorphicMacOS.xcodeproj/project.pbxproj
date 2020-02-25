@@ -13,6 +13,8 @@
 		9D2EE03623E908AB00F2F1D1 /* NAPIJavaScriptError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D2EE03523E908AB00F2F1D1 /* NAPIJavaScriptError.swift */; };
 		9DC1604723FB7BCD003A3DB0 /* NAPIAudioFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC1604623FB7BCD003A3DB0 /* NAPIAudioFunctions.swift */; };
 		9DC1605123FB7CB3003A3DB0 /* MorphicAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC1605023FB7CB3003A3DB0 /* MorphicAudio.swift */; };
+		9DCC462624045CFB00224358 /* NAPIDisplayFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DCC462524045CFB00224358 /* NAPIDisplayFunctions.swift */; };
+		9DCC462A24045D3F00224358 /* MorphicDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DCC462924045D3F00224358 /* MorphicDisplay.swift */; };
 		9DCE644623BA970200243A18 /* MorphicMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 9DCE644523BA970200243A18 /* MorphicMacOS.h */; };
 		9DCE644823BA970200243A18 /* MorphicMacOS.m in Sources */ = {isa = PBXBuildFile; fileRef = 9DCE644723BA970200243A18 /* MorphicMacOS.m */; };
 		9DCE645023BA982D00243A18 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DCE644F23BA982D00243A18 /* Main.swift */; };
@@ -35,6 +37,8 @@
 		9D2EE03523E908AB00F2F1D1 /* NAPIJavaScriptError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPIJavaScriptError.swift; sourceTree = "<group>"; };
 		9DC1604623FB7BCD003A3DB0 /* NAPIAudioFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPIAudioFunctions.swift; sourceTree = "<group>"; };
 		9DC1605023FB7CB3003A3DB0 /* MorphicAudio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MorphicAudio.swift; sourceTree = "<group>"; };
+		9DCC462524045CFB00224358 /* NAPIDisplayFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPIDisplayFunctions.swift; sourceTree = "<group>"; };
+		9DCC462924045D3F00224358 /* MorphicDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MorphicDisplay.swift; sourceTree = "<group>"; };
 		9DCE644223BA970200243A18 /* libMorphicMacOS.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libMorphicMacOS.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		9DCE644523BA970200243A18 /* MorphicMacOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MorphicMacOS.h; sourceTree = "<group>"; };
 		9DCE644723BA970200243A18 /* MorphicMacOS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MorphicMacOS.m; sourceTree = "<group>"; };
@@ -73,6 +77,14 @@
 				9DC1605023FB7CB3003A3DB0 /* MorphicAudio.swift */,
 			);
 			path = Audio;
+			sourceTree = "<group>";
+		};
+		9DCC462124045CB200224358 /* Display */ = {
+			isa = PBXGroup;
+			children = (
+				9DCC462924045D3F00224358 /* MorphicDisplay.swift */,
+			);
+			path = Display;
 			sourceTree = "<group>";
 		};
 		9DCE643923BA970200243A18 = {
@@ -155,6 +167,7 @@
 				CE4DEBD523F65E8000519CD9 /* NAPIDiskFunctions.swift */,
 				9DE3F78523FCD92700634AA2 /* NAPIProcessFunctions.swift */,
 				9DE3F78F23FCFA5A00634AA2 /* NAPILanguageFunctions.swift */,
+				9DCC462524045CFB00224358 /* NAPIDisplayFunctions.swift */,
 			);
 			path = BridgeFunctions;
 			sourceTree = "<group>";
@@ -162,6 +175,7 @@
 		9DFCE55C23F627AB00300EC4 /* NativeClasses */ = {
 			isa = PBXGroup;
 			children = (
+				9DCC462124045CB200224358 /* Display */,
 				9DE3F78A23FCF4E700634AA2 /* Language */,
 				9DE3F77923FCD14500634AA2 /* Process */,
 				9DC1604823FB7BE6003A3DB0 /* Audio */,
@@ -254,12 +268,14 @@
 				9DCE645023BA982D00243A18 /* Main.swift in Sources */,
 				9D2EE03623E908AB00F2F1D1 /* NAPIJavaScriptError.swift in Sources */,
 				9DE3F78623FCD92700634AA2 /* NAPIProcessFunctions.swift in Sources */,
+				9DCC462A24045D3F00224358 /* MorphicDisplay.swift in Sources */,
 				9DE3F78223FCD59600634AA2 /* MorphicLaunchDaemonsAndAgents.swift in Sources */,
 				CE4DEBD623F65E8000519CD9 /* NAPIDiskFunctions.swift in Sources */,
 				9DCE644823BA970200243A18 /* MorphicMacOS.m in Sources */,
 				9DC1605123FB7CB3003A3DB0 /* MorphicAudio.swift in Sources */,
 				9DC1604723FB7BCD003A3DB0 /* NAPIAudioFunctions.swift in Sources */,
 				9DE3F78C23FCF4F000634AA2 /* MorphicLanguage.swift in Sources */,
+				9DCC462624045CFB00224358 /* NAPIDisplayFunctions.swift in Sources */,
 				9DCE646823BD8DBE00243A18 /* NAPIValue.swift in Sources */,
 				9D2EE02623E88F3500F2F1D1 /* NAPIValueCompatible.swift in Sources */,
 				9DFCE56123F628B100300EC4 /* MorphicDisk.swift in Sources */,
