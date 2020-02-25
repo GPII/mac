@@ -51,6 +51,7 @@
 EXTERN_C_START
 
 // Getters for defined singletons
+NAPI_EXTERN napi_status napi_get_null(napi_env env, napi_value* result);
 NAPI_EXTERN napi_status napi_get_boolean(napi_env env,
                                          bool value,
                                          napi_value* result);

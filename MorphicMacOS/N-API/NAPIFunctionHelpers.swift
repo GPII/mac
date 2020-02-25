@@ -75,6 +75,11 @@ internal func napiFunctionTrampoline(_ env: napi_env!, _ info: napi_callback_inf
     let argumentsAsNapiValues = Array(UnsafeBufferPointer(start: pointerToArgumentsAsNapiValues, count: numberOfArguments))
     var arguments: [Any?] = []
 
+    guard argumentsAsNapiValues.count >= napiFunctionData.argumentTypes.count else {
+        // TODO: consider throwing an error (although it might be better to error out so that the programmer can fix the issue immediately)
+        fatalError("Not enough arguments were provided. Received: \(argumentsAsNapiValues.count); Expected: \(napiFunctionData.argumentTypes.count)")
+    }
+
     for index in 0..<napiFunctionData.argumentTypes.count {
         guard let argumentAsNapiValue = argumentsAsNapiValues[index] else {
             // NOTE: arguments should not be nil (as there is a napi_value for "null")
@@ -103,10 +108,10 @@ internal func napiFunctionTrampoline(_ env: napi_env!, _ info: napi_callback_inf
             }
         } else {
             // for any argument which is not an empty array, verify the strict typing
-            guard napiValueTypeOfArgument == napiFunctionData.argumentTypes[index] else {
-                // type mismatch; cannot proceed
-                // TODO: throw an error
-                return nil
+            // NOTE: we set disregardRhsOptionals to true so that non-optional incoming values will match argument types which allow nulls
+            guard napiValueTypeOfArgument.isCompatible(withRhs: napiFunctionData.argumentTypes[index], disregardRhsOptionals: true) else {
+                // TODO: consider throwing an error (although it might be better to error out so that the programmer can fix the issue immediately)
+                fatalError("Argument \(index) is the wrong type. Received: \(napiValueTypeOfArgument); Expected: \(napiFunctionData.argumentTypes[index])")
             }
         }
         
@@ -122,6 +127,9 @@ internal func napiFunctionTrampoline(_ env: napi_env!, _ info: napi_callback_inf
             case .string:
                 let argumentAsString = try NAPIValue(env: env, napiValue: argumentAsNapiValue).asString()!
                 arguments.append(argumentAsString)
+            case .nullable(let wrappedType):
+                precondition(wrappedType == nil, "Arguments of type .nullable(...) should only be mapped to null itself.")
+                arguments.append(nil)
             case .array(_):
                 let argumentAsArray = try NAPIValue(env: env, napiValue: argumentAsNapiValue, napiValueType: napiValueTypeOfArgument).asArray()!
                 arguments.append(argumentAsArray)

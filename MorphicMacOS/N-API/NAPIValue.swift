@@ -36,10 +36,20 @@ public class NAPIValue {
         return create(env: env, nativeValue: nativeValue, napiValueType: T.napiValueType)
     }
     
+    // NOTE: if a napiValueType of .nullable(...) is provided the function will either return a ".nullable(nil)" or a NAPIValue of the wrapped type
     public static func create(env: napi_env, nativeValue: Any, napiValueType: NAPIValueType) -> NAPIValue {
         // convert the array to the NAPIValueCompatible protocol
         guard let _ = nativeValue as? NAPIValueCompatible else {
             fatalError("Argument 'nativeValue' must be be compatible with the NAPIValueCompatible protocol.")
+        }
+
+        if case .nullable(_) = napiValueType {
+            // if napiValueType is nullable, the nativeValue may be nil: proceed
+        } else {
+            // if napiValueType is not optional, make sure that nativeValue is not nil
+            if case Optional<Any>.none = nativeValue {
+                fatalError("Argument 'nativeValue' cannot be nil if its type is not optional.")
+            }
         }
         
         switch napiValueType {
@@ -49,6 +59,19 @@ public class NAPIValue {
             return createNumber(env: env, nativeValue: nativeValue as! Double)
         case .string:
             return createString(env: env, nativeValue: nativeValue as! String)
+        case .nullable(let napiValueTypeOfWrapped):
+            if napiValueTypeOfWrapped != nil {
+                if case Optional<Any>.none = nativeValue {
+                    // if we have a wrapped type but the value is nil, return a JavaScript null
+                    return createNull(env: env)
+                } else {
+                    // if the value is non-nil, return the appropriate JavaScript type
+                    return create(env: env, nativeValue: nativeValue, napiValueType: napiValueTypeOfWrapped!)
+                }
+            } else {
+                // if we don't have a type then return null
+                return createNull(env: env)
+            }
         case .array(let napiValueTypeOfElements):
             if let napiValueTypeOfElements = napiValueTypeOfElements {
                 return createArray(env: env, nativeArray: nativeValue, napiValueTypeOfElements: napiValueTypeOfElements)
@@ -94,6 +117,19 @@ public class NAPIValue {
         var result: napi_value! = nil
         
         let status = napi_create_string_utf8(env, nativeValue, nativeValue.utf8.count, &result)
+        guard status == napi_ok else {
+            // TODO: check for JavaScript errors instead and throw them instead
+            fatalError()
+        }
+
+        return NAPIValue(env: env, napiValue: result)
+    }
+
+    private static func createNull(env: napi_env) -> NAPIValue {
+        var result: napi_value! = nil
+        
+        // NOTE: napi_get_boolean gets the JavaScript null singleton
+        let status = napi_get_null(env, &result)
         guard status == napi_ok else {
             // TODO: check for JavaScript errors instead and throw them instead
             fatalError()
@@ -161,6 +197,9 @@ public class NAPIValue {
             case .string:
                 let value = try self.asString()
                 return value
+            case .nullable(let wrappedType):
+                precondition(wrappedType == nil, "NAPIValues of type .nullable(...) should only be mapped to null itself.")
+                return nil
             case .array(_):
                 let valueAsNAPIValueCompatible = try self.asArray() as! NAPIValueCompatible
                 return valueAsNAPIValueCompatible
@@ -187,6 +226,9 @@ public class NAPIValue {
             case .number:
                 return nil
             case .string:
+                return nil
+            case .nullable(let wrappedType):
+                precondition(wrappedType == nil, "NAPIValues of type .nullable(...) should only be mapped to null itself.")
                 return nil
             case .array(_):
                 return nil
@@ -216,6 +258,9 @@ public class NAPIValue {
             case .string:
                 let valueAsString = try self.convertNapiValueToString()
                 return Double(valueAsString)
+            case .nullable(let wrappedType):
+                precondition(wrappedType == nil, "NAPIValues of type .nullable(...) should only be mapped to null itself.")
+                return nil
             case .array(_):
                 return nil
             case .undefined:
@@ -244,6 +289,9 @@ public class NAPIValue {
             case .string:
                 let valueAsString = try self.convertNapiValueToString()
                 return valueAsString
+            case .nullable(let wrappedType):
+                precondition(wrappedType == nil, "NAPIValues of type .nullable(...) should only be mapped to null itself.")
+                return nil
             case .array(_):
                 return nil
             case .undefined:
@@ -268,6 +316,9 @@ public class NAPIValue {
             case .number:
                 return nil
             case .string:
+                return nil
+            case .nullable(let wrappedType):
+                precondition(wrappedType == nil, "NAPIValues of type .nullable(...) should only be mapped to null itself.")
                 return nil
             case .array(_):
                 let valueAsArray = try self.convertNapiValueToArray()

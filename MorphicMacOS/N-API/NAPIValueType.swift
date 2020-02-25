@@ -15,6 +15,9 @@ public indirect enum NAPIValueType {
     case number
     case string
     //
+    // NOTE: a nullable of type 'nil' denotes a JavaScript "null" with no attached type information
+    case nullable(type: NAPIValueType?)
+    //
     // NOTE: an array of type 'nil' denotes an empty array
     case array(type: NAPIValueType?)
     //
@@ -23,8 +26,9 @@ public indirect enum NAPIValueType {
     // NOTE: 'unsupported' denotes a type which we do not support
     case unsupported
  
-    public static func ==(lhs: NAPIValueType, rhs: NAPIValueType) -> Bool {
-        switch lhs {
+    // NOTE: setting disregardOptionals to true will equate optionally-wrapped types and non-wrapped types as a match (as long as the optional's wrapped type is the same as the non-wrapped type); this will be done recursively, ignoring any sub-optionals
+    public func isCompatible(withRhs rhs: NAPIValueType, disregardRhsOptionals: Bool = false) -> Bool {
+        switch self {
         case .boolean:
             if case .boolean = rhs {
                 return true
@@ -37,13 +41,22 @@ public indirect enum NAPIValueType {
             if case .string = rhs {
                 return true
             }
-        case .array(let lhsType):
+        case .nullable(let selfType):
+            if case let .nullable(rhsType) = rhs {
+                if selfType == nil || rhsType == nil {
+                    // if one nullable contains no type (i.e. 'nil' type), its type always matches any other nullable (since a nullable of type nil is a JavaScript "null" and can therefore satisfy any nullable type)
+                    return true
+                } else {
+                    return selfType!.isCompatible(withRhs: rhsType!, disregardRhsOptionals: disregardRhsOptionals)
+                }
+            }
+        case .array(let selfType):
             if case let .array(rhsType) = rhs {
-                if lhsType == nil || rhsType == nil {
+                if selfType == nil || rhsType == nil {
                     // if one array contains no elements (i.e. 'nil' type), its type matches any other array (since JavaScript arrays with no elements "contain no type information"; likewise, two empty ('nil' type) arrays always match
                     return true
                 } else {
-                    return lhsType! == rhsType!
+                    return selfType!.isCompatible(withRhs: rhsType!, disregardRhsOptionals: disregardRhsOptionals)
                 }
             }
         case .undefined:
@@ -56,8 +69,21 @@ public indirect enum NAPIValueType {
             }
         }
         
-        // if no matches were found, return false
+        // if no direct matches were found...but the user allows us to disregard optionals on the right-hand side...and if the right-side is an optional...then try that comparison now too
+        if disregardRhsOptionals == true {
+            if case let .nullable(rhsWrapped) = rhs {
+                if let rhsWrapped = rhsWrapped {
+                    return self.isCompatible(withRhs: rhsWrapped, disregardRhsOptionals: disregardRhsOptionals)
+                }
+            }
+        }
+        
+        // otherwise, if no matches were found, return false
         return false
+    }
+    //
+    public static func ==(lhs: NAPIValueType, rhs: NAPIValueType) -> Bool {
+        return lhs.isCompatible(withRhs: rhs, disregardRhsOptionals: false)
     }
     //
     public static func !=(lhs: NAPIValueType, rhs: NAPIValueType) -> Bool {
@@ -83,6 +109,8 @@ extension NAPIValueType {
             return .number
         case napi_string:
             return .string
+        case napi_null:
+            return .nullable(type: nil)
         case napi_object:
             // determine if this object is an array
             var napiValueIsArray: Bool = false

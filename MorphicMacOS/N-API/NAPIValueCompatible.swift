@@ -21,19 +21,25 @@ extension Bool: NAPIValueCompatible {
     }
 }
 //
-extension Double : NAPIValueCompatible {
+extension Double: NAPIValueCompatible {
     public static var napiValueType: NAPIValueType {
         return .number
     }
 }
 //
-extension String : NAPIValueCompatible {
+extension String: NAPIValueCompatible {
     public static var napiValueType: NAPIValueType {
         return .string
     }
 }
 
-extension Array : NAPIValueCompatible where Element: NAPIValueCompatible {
+extension Optional: NAPIValueCompatible where Wrapped: NAPIValueCompatible {
+    public static var napiValueType: NAPIValueType {
+        return .nullable(type: Wrapped.napiValueType)
+    }
+}
+
+extension Array: NAPIValueCompatible where Element: NAPIValueCompatible {
     public static var napiValueType: NAPIValueType {
         return .array(type: Element.napiValueType)
     }
