@@ -19,7 +19,7 @@ public class MorphicDisplay {
     // MARK: - DisplayMode struct
     
     public struct DisplayMode: Equatable {
-        fileprivate let ioDisplayModeId: Int32
+        public let ioDisplayModeId: Int32 
         public let widthInPixels: Int
         public let heightInPixels: Int
         public let widthInVirtualPixels: Int

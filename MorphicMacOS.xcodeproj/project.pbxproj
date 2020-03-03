@@ -11,6 +11,7 @@
 		9D2EE02A23E8969700F2F1D1 /* NAPIValueType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D2EE02923E8969700F2F1D1 /* NAPIValueType.swift */; };
 		9D2EE03423E8FC9F00F2F1D1 /* NAPIFunctionHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D2EE03323E8FC9F00F2F1D1 /* NAPIFunctionHelpers.swift */; };
 		9D2EE03623E908AB00F2F1D1 /* NAPIJavaScriptError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D2EE03523E908AB00F2F1D1 /* NAPIJavaScriptError.swift */; };
+		9D41E89F240C755D004A8E98 /* NAPIObjectCompatible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D41E89E240C755D004A8E98 /* NAPIObjectCompatible.swift */; };
 		9DC1604723FB7BCD003A3DB0 /* NAPIAudioFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC1604623FB7BCD003A3DB0 /* NAPIAudioFunctions.swift */; };
 		9DC1605123FB7CB3003A3DB0 /* MorphicAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC1605023FB7CB3003A3DB0 /* MorphicAudio.swift */; };
 		9DCC462624045CFB00224358 /* NAPIDisplayFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DCC462524045CFB00224358 /* NAPIDisplayFunctions.swift */; };
@@ -35,6 +36,7 @@
 		9D2EE02923E8969700F2F1D1 /* NAPIValueType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPIValueType.swift; sourceTree = "<group>"; };
 		9D2EE03323E8FC9F00F2F1D1 /* NAPIFunctionHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPIFunctionHelpers.swift; sourceTree = "<group>"; };
 		9D2EE03523E908AB00F2F1D1 /* NAPIJavaScriptError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPIJavaScriptError.swift; sourceTree = "<group>"; };
+		9D41E89E240C755D004A8E98 /* NAPIObjectCompatible.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPIObjectCompatible.swift; sourceTree = "<group>"; };
 		9DC1604623FB7BCD003A3DB0 /* NAPIAudioFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPIAudioFunctions.swift; sourceTree = "<group>"; };
 		9DC1605023FB7CB3003A3DB0 /* MorphicAudio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MorphicAudio.swift; sourceTree = "<group>"; };
 		9DCC462524045CFB00224358 /* NAPIDisplayFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPIDisplayFunctions.swift; sourceTree = "<group>"; };
@@ -124,6 +126,7 @@
 				9DCE645523BA99EE00243A18 /* include */,
 				9D2EE03323E8FC9F00F2F1D1 /* NAPIFunctionHelpers.swift */,
 				9D2EE03523E908AB00F2F1D1 /* NAPIJavaScriptError.swift */,
+				9D41E89E240C755D004A8E98 /* NAPIObjectCompatible.swift */,
 				9DCE646523BD863900243A18 /* NAPIProperty.swift */,
 				9DCE646723BD8DBE00243A18 /* NAPIValue.swift */,
 				9D2EE02923E8969700F2F1D1 /* NAPIValueType.swift */,
@@ -165,9 +168,9 @@
 			children = (
 				9DC1604623FB7BCD003A3DB0 /* NAPIAudioFunctions.swift */,
 				CE4DEBD523F65E8000519CD9 /* NAPIDiskFunctions.swift */,
-				9DE3F78523FCD92700634AA2 /* NAPIProcessFunctions.swift */,
-				9DE3F78F23FCFA5A00634AA2 /* NAPILanguageFunctions.swift */,
 				9DCC462524045CFB00224358 /* NAPIDisplayFunctions.swift */,
+				9DE3F78F23FCFA5A00634AA2 /* NAPILanguageFunctions.swift */,
+				9DE3F78523FCD92700634AA2 /* NAPIProcessFunctions.swift */,
 			);
 			path = BridgeFunctions;
 			sourceTree = "<group>";
@@ -175,11 +178,11 @@
 		9DFCE55C23F627AB00300EC4 /* NativeClasses */ = {
 			isa = PBXGroup;
 			children = (
+				9DC1604823FB7BE6003A3DB0 /* Audio */,
+				9DFCE55D23F6282C00300EC4 /* Disk */,
 				9DCC462124045CB200224358 /* Display */,
 				9DE3F78A23FCF4E700634AA2 /* Language */,
 				9DE3F77923FCD14500634AA2 /* Process */,
-				9DC1604823FB7BE6003A3DB0 /* Audio */,
-				9DFCE55D23F6282C00300EC4 /* Disk */,
 			);
 			path = NativeClasses;
 			sourceTree = "<group>";
@@ -261,6 +264,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9D41E89F240C755D004A8E98 /* NAPIObjectCompatible.swift in Sources */,
 				9DE3F77E23FCD18400634AA2 /* MorphicProcess.swift in Sources */,
 				9DE3F79023FCFA5A00634AA2 /* NAPILanguageFunctions.swift in Sources */,
 				9DCE646623BD863900243A18 /* NAPIProperty.swift in Sources */,
