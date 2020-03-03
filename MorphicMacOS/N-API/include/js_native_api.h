@@ -57,6 +57,7 @@ NAPI_EXTERN napi_status napi_get_boolean(napi_env env,
                                          napi_value* result);
 
 // Methods to create Primitive types/Objects
+NAPI_EXTERN napi_status napi_create_object(napi_env env, napi_value* result);
 NAPI_EXTERN napi_status napi_create_array_with_length(napi_env env,
                                                       size_t length,
                                                       napi_value* result);
@@ -93,6 +94,17 @@ NAPI_EXTERN napi_status napi_get_value_string_utf8(napi_env env,
                                                    size_t* result);
 
 // Methods to work with Objects
+NAPI_EXTERN napi_status napi_get_property_names(napi_env env,
+                                                napi_value object,
+                                                napi_value* result);
+NAPI_EXTERN napi_status napi_set_property(napi_env env,
+                                          napi_value object,
+                                          napi_value key,
+                                          napi_value value);
+NAPI_EXTERN napi_status napi_get_property(napi_env env,
+                                          napi_value object,
+                                          napi_value key,
+                                          napi_value* result);
 NAPI_EXTERN napi_status napi_set_element(napi_env env,
                                          napi_value object,
                                          uint32_t index,

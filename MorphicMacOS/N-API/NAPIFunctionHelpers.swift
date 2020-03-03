@@ -130,9 +130,24 @@ internal func napiFunctionTrampoline(_ env: napi_env!, _ info: napi_callback_inf
             case .nullable(let wrappedType):
                 precondition(wrappedType == nil, "Arguments of type .nullable(...) should only be mapped to null itself.")
                 arguments.append(nil)
-            case .array(_):
-                let argumentAsArray = try NAPIValue(env: env, napiValue: argumentAsNapiValue, napiValueType: napiValueTypeOfArgument).asArray()!
-                arguments.append(argumentAsArray)
+            case .object(_, _):
+                if case let .object(_ , swiftType) = napiFunctionData.argumentTypes[index] {
+                    guard let swiftType = swiftType else {
+                        fatalError("Function argument has no associated Swift type")
+                    }
+                    let argumentAsObject = try NAPIValue(env: env, napiValue: argumentAsNapiValue, napiValueType: napiValueTypeOfArgument).asObject(ofType: swiftType)
+                    arguments.append(argumentAsObject)
+                } else {
+                    // unreachable code: swiftType must always be (auto-)populated in napiFunctionData
+                    fatalError()
+                }
+            case .array(let elementNapiValueType):
+                if let elementNapiValueType = elementNapiValueType {
+                    let argumentAsArray = try NAPIValue(env: env, napiValue: argumentAsNapiValue, napiValueType: napiValueTypeOfArgument).asArray(elementNapiValueType: elementNapiValueType)!
+                    arguments.append(argumentAsArray)
+                } else {
+                    arguments.append([])
+                }
             case .undefined:
                 // this is an unsupported type (and should be unreachable code)
                 fatalError()

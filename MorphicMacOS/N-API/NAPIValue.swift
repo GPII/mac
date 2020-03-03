@@ -72,6 +72,18 @@ public class NAPIValue {
                 // if we don't have a type then return null
                 return createNull(env: env)
             }
+        case .object(_, let swiftType):
+            // NOTE: all NAPIValues which we create from Swift types must have an associated swiftType
+            guard let swiftType = swiftType else {
+                fatalError("Argument 'nativeValueType' is an object but has no associated Swift type")
+            }
+            guard swiftType.self == type(of: nativeValue).self else {
+                fatalError("Argument 'nativeValueType' specified an object with a different Swift type than argument 'nativeValue'")
+            }
+            guard let nativeValueAsNapiObjectCompatible = nativeValue as? NAPIObjectCompatible else {
+                fatalError("Argument 'nativeValue' does not conform to the NAPIObjectCompatible protocol")
+            }
+            return createObject(env: env, nativeValue: nativeValueAsNapiObjectCompatible, ofType: swiftType)
         case .array(let napiValueTypeOfElements):
             if let napiValueTypeOfElements = napiValueTypeOfElements {
                 return createArray(env: env, nativeArray: nativeValue, napiValueTypeOfElements: napiValueTypeOfElements)
@@ -137,6 +149,46 @@ public class NAPIValue {
 
         return NAPIValue(env: env, napiValue: result)
     }
+    
+    private static func createObject(env: napi_env, nativeValue: NAPIObjectCompatible, ofType targetType: NAPIObjectCompatible.Type) -> NAPIValue {
+        var result: napi_value! = nil
+        
+        var status = napi_create_object(env, &result)
+        guard status == napi_ok else {
+            // TODO: check for JavaScript errors instead and throw them instead
+            fatalError()
+        }
+
+        // create a NAPI value by reflecting on the properties of the provided object
+        let mirror = Mirror(reflecting: nativeValue)
+        for child in mirror.children {
+            guard let propertyName = child.label else {
+                fatalError("Mirror reflection failed: could not retrieve property name")
+            }
+            let propertyValue = child.value
+            
+            let propertyNameAsNapiValue = NAPIValue.create(env: env, nativeValue: propertyName, napiValueType: .string)
+
+            let propertyAsCNapiValue: napi_value
+            if case Optional<Any>.none = propertyValue {
+                propertyAsCNapiValue = createNull(env: env).napiValue
+            } else {
+                guard let propertyValueAsNapiValueCompatible = propertyValue as? NAPIValueCompatible else {
+                    fatalError("Property \(propertyName) is not a NAPIValueCompatible type")
+                }
+                let napiValueTypeOfPropertyValue = type(of: propertyValueAsNapiValueCompatible).napiValueType
+                propertyAsCNapiValue = NAPIValue.create(env: env, nativeValue: propertyValueAsNapiValueCompatible, napiValueType: napiValueTypeOfPropertyValue).napiValue
+            }
+
+            status = napi_set_property(env, result, propertyNameAsNapiValue.napiValue, propertyAsCNapiValue)
+            guard status == napi_ok else {
+                // TODO: check for JavaScript errors instead and throw them instead
+                fatalError()
+            }
+        }
+        
+        return NAPIValue(env: env, napiValue: result)
+    }
 
     private static func createArray(env: napi_env, nativeArray: Any, napiValueTypeOfElements: NAPIValueType) -> NAPIValue {
         // convert the array to the NAPIValueCompatible protocol
@@ -200,9 +252,10 @@ public class NAPIValue {
             case .nullable(let wrappedType):
                 precondition(wrappedType == nil, "NAPIValues of type .nullable(...) should only be mapped to null itself.")
                 return nil
+            case .object:
+                fatalError("This function should not be called for object NAPIValueTypes; call .asNAPIValueCompatibleObject(...) instead")
             case .array(_):
-                let valueAsNAPIValueCompatible = try self.asArray() as! NAPIValueCompatible
-                return valueAsNAPIValueCompatible
+                fatalError("This function should not be called for array NAPIValueTypes; call .asArrayOfNAPIValueCompatible(...) instead")
             case .undefined:
                 return nil
             case .unsupported:
@@ -216,7 +269,47 @@ public class NAPIValue {
             fatalError()
         }
     }
-
+    
+    public func asNAPIValueCompatibleObject(ofType targetType: NAPIObjectCompatible.Type) throws -> NAPIValueCompatible? {
+        do {
+            if case .object(_) = self.napiValueType {
+                let value = try self.asObject(ofType: targetType)
+                return value
+            } else {
+                // not an object
+                fatalError("This funciton should not be called for non-object NAPIValueTypes")
+            }
+        } catch NAPIValueError.otherNapiError {
+            // TODO: handle this error...or convert it into a NAPIJavaScriptError and throw it instead
+            fatalError()
+        } catch {
+            // any other errors indicate a programming bug
+            fatalError()
+        }
+    }
+    
+    public func asArrayOfNAPIValueCompatible(elementNapiValueType: NAPIValueType) throws -> [Any]? {
+        do {
+            // TODO: use this same "case" and "let" combo (case before ".", let in the parens) EVERYWHERE in our code...for consistency
+            if case .array(_) = self.napiValueType {
+                if let valueAsNAPIValueCompatible = try self.asArray(elementNapiValueType: elementNapiValueType) {
+                    return valueAsNAPIValueCompatible
+                } else {
+                    return nil
+                }
+            } else {
+                // not an array
+                fatalError("This funciton should not be called for non-array NAPIValueTypes")
+            }
+        } catch NAPIValueError.otherNapiError {
+            // TODO: handle this error...or convert it into a NAPIJavaScriptError and throw it instead
+            fatalError()
+        } catch {
+            // any other errors indicate a programming bug
+            fatalError()
+        }
+    }
+    
     public func asBool() throws -> Bool? {
         do {
             switch self.napiValueType {
@@ -229,6 +322,8 @@ public class NAPIValue {
                 return nil
             case .nullable(let wrappedType):
                 precondition(wrappedType == nil, "NAPIValues of type .nullable(...) should only be mapped to null itself.")
+                return nil
+            case .object:
                 return nil
             case .array(_):
                 return nil
@@ -261,6 +356,8 @@ public class NAPIValue {
             case .nullable(let wrappedType):
                 precondition(wrappedType == nil, "NAPIValues of type .nullable(...) should only be mapped to null itself.")
                 return nil
+            case .object:
+                return nil
             case .array(_):
                 return nil
             case .undefined:
@@ -292,6 +389,8 @@ public class NAPIValue {
             case .nullable(let wrappedType):
                 precondition(wrappedType == nil, "NAPIValues of type .nullable(...) should only be mapped to null itself.")
                 return nil
+            case .object:
+                return nil
             case .array(_):
                 return nil
             case .undefined:
@@ -308,7 +407,7 @@ public class NAPIValue {
         }
     }
     
-    public func asArray() throws -> [NAPIValueCompatible]? {
+    public func asArray(elementNapiValueType: NAPIValueType) throws -> [Any]? {
         do {
             switch self.napiValueType {
             case .boolean:
@@ -320,9 +419,15 @@ public class NAPIValue {
             case .nullable(let wrappedType):
                 precondition(wrappedType == nil, "NAPIValues of type .nullable(...) should only be mapped to null itself.")
                 return nil
-            case .array(_):
-                let valueAsArray = try self.convertNapiValueToArray()
-                return valueAsArray
+            case .object:
+                return nil
+            case .array(let elementNAPIValueType):
+                if let elementNAPIValueType = elementNAPIValueType {
+                    let valueAsArray = try self.convertNapiValueToArray(elementNapiValueType: elementNAPIValueType)
+                    return valueAsArray
+                } else {
+                    return []
+                }
             case .undefined:
                 return nil
             case .unsupported:
@@ -336,6 +441,70 @@ public class NAPIValue {
             fatalError()
         }
     }
+    
+    public func asArrayOfNapiValues() throws -> [NAPIValue]? {
+        do {
+            switch self.napiValueType {
+            case .boolean:
+                return nil
+            case .number:
+                return nil
+            case .string:
+                return nil
+            case .nullable(let wrappedType):
+                precondition(wrappedType == nil, "NAPIValues of type .nullable(...) should only be mapped to null itself.")
+                return nil
+            case .object:
+                return nil
+            case .array(_):
+                let valueAsArrayOrNapiValues = try self.convertNapiValueToArrayOfNapiValues()
+                return valueAsArrayOrNapiValues
+            case .undefined:
+                return nil
+            case .unsupported:
+                return nil
+            }
+        } catch NAPIValueError.otherNapiError {
+            // TODO: handle this error...or convert it into a NAPIJavaScriptError and throw it instead
+            fatalError()
+        } catch {
+            // any other errors indicate a programming bug
+            fatalError()
+        }
+    }
+    
+    public func asObject(ofType targetType: NAPIObjectCompatible.Type) throws -> NAPIValueCompatible? {
+        do {
+            switch self.napiValueType {
+            case .boolean:
+                return nil
+            case .number:
+                return nil
+            case .string:
+                return nil
+            case .nullable(let wrappedType):
+                precondition(wrappedType == nil, "NAPIValues of type .nullable(...) should only be mapped to null itself.")
+                return nil
+            case .object:
+                let valueAsObject = try self.convertNapiValueToObject(ofType: targetType)
+                return valueAsObject
+            case .array(_):
+                return nil
+            case .undefined:
+                return nil
+            case .unsupported:
+                return nil
+            }
+        } catch NAPIValueError.otherNapiError {
+            // TODO: handle this error...or convert it into a NAPIJavaScriptError and throw it instead
+            fatalError()
+        } catch {
+            // any other errors indicate a programming bug
+            fatalError()
+        }
+    }
+    
+    // MARK: Conversion functions
 
     private func convertNapiValueToBool() throws -> Bool {
         guard self.napiValueType == .boolean else {
@@ -419,14 +588,157 @@ public class NAPIValue {
         return String(cString: buffer)
     }
     
-    private func convertNapiValueToArray() throws -> Array<NAPIValueCompatible> {
+    private func convertNapiValueToObject(ofType targetType: NAPIObjectCompatible.Type) throws -> NAPIValueCompatible {
+        // verify that our napiValueType is an object type
+        guard case .object(let napiPropertyNamesAndTypes, let swiftType) = self.napiValueType else {
+            throw NAPIValueError.typeMismatch
+        }
+        // verify that our napiValueType's swiftType (if one is provided) matches the provided targetType
+        if let swiftType = swiftType {
+            guard swiftType.self == type(of: targetType).self else {
+                throw NAPIValueError.typeMismatch
+            }
+        }
+
+        let swiftPropertyNamesAndTypes = targetType.NAPIPropertyNamesAndTypes
+        
+        // verify that our NAPIValue's properties and the target swift type's properties are compatible
+        if napiPropertyNamesAndTypes.count != swiftPropertyNamesAndTypes.count {
+            fatalError("NAPI argument count \(napiPropertyNamesAndTypes.count) does not match native argument count \(napiPropertyNamesAndTypes.count)")
+        }
+        for napiPropertyNameAndType in napiPropertyNamesAndTypes {
+            let napiPropertyName = napiPropertyNameAndType.key
+            let napiPropertyNapiValueType = napiPropertyNameAndType.value
+
+            if swiftPropertyNamesAndTypes.keys.contains(napiPropertyName) == false {
+                fatalError("NAPI property \(napiPropertyName) does not exist in Swift object.")
+            }
+            let swiftPropertyNapiValueType = swiftPropertyNamesAndTypes[napiPropertyName]!
+            
+            if napiPropertyNapiValueType.isCompatible(withRhs: swiftPropertyNapiValueType, disregardRhsOptionals: true) == false {
+                fatalError("Type mismatch: NAPI property type is incompatible with Swift property type for property \(napiPropertyNameAndType.key).")
+            }
+        }
+        
+        // build up a set of property names (with their associated values) as we deecode the underlying napi_value
+        var propertyNamesAndValues: [String: Any] = [:]
+        
+        var status: napi_status
+        
+        for propertyNameAndType in napiPropertyNamesAndTypes {
+            // get the property name
+            let propertyName = propertyNameAndType.key
+            // NOTE: we do not retrieve the propertyNameAndType's value (i.e. the property's NAPIValueType) because the decoder validates that the property types match instead; this is necessary because of type comformance limitations in Swift.  We could choose to verify against non-array types, but using the decoder provides a single path for type match validation
+//            // retrieve the property's NAPIValueType (to verify for compatibility against the actual property's NAPIValueType)
+//            let propertyNapiValueType = propertyNameAndType.value
+            
+            let propertyNameAsNapiValue = NAPIValue.create(env: env, nativeValue: propertyName)
+            
+            // get the property's associated value (initially as a napi_value but then converted into a Swift type)
+            var propertyValueAsCNapiValue: napi_value! = nil
+            status = napi_get_property(env, self.napiValue, propertyNameAsNapiValue.napiValue, &propertyValueAsCNapiValue)
+            guard status == napi_ok else {
+                // TODO: check for JavaScript errors instead and throw them instead
+                fatalError()
+            }
+            // NOTE: we use "Any" as our type here because .asArrayOfNAPIValueCompatible(...) must return a result of type Any because Swift cannot return an array of NAPIValueCompatible-conformant objects via cast to NAPIValueCompatible
+            var propertyValueAsOptionalNapiValueCompatible: Any
+            do {
+                switch swiftPropertyNamesAndTypes[propertyName] {
+                case .object(_, let propertySwiftType):
+                    // object type
+                    if let propertySwiftType = propertySwiftType {
+                        propertyValueAsOptionalNapiValueCompatible = try NAPIValue(env: env, napiValue: propertyValueAsCNapiValue).asNAPIValueCompatibleObject(ofType: propertySwiftType)
+                    } else {
+                        fatalError("Swift type must be specified for Swift property \(propertyName); found: nil")
+                    }
+                case .array(let elementNapiValueType):
+                    // array type
+                    if let elementNapiValueType = elementNapiValueType {
+                        propertyValueAsOptionalNapiValueCompatible = try NAPIValue(env: env, napiValue: propertyValueAsCNapiValue).asArrayOfNAPIValueCompatible(elementNapiValueType: elementNapiValueType)
+                    } else {
+                        // if elementNapiValueType is nil, then the array is empty
+                        propertyValueAsOptionalNapiValueCompatible = []
+                    }
+                default:
+                    propertyValueAsOptionalNapiValueCompatible = try NAPIValue(env: env, napiValue: propertyValueAsCNapiValue).asNAPIValueCompatible()
+                }
+            } catch (let error) {
+                throw error
+            }
+            // TODO: does this really test for nil?  Or do we need to do "== nil" check, etc?
+            if case Optional<Any>.none = propertyValueAsOptionalNapiValueCompatible {
+                // value is nil
+                propertyNamesAndValues[propertyName] = nil 
+            } else {
+                propertyNamesAndValues[propertyName] = propertyValueAsOptionalNapiValueCompatible
+            }
+        }
+
+        // create an instance of the target type by using our NAPIBridgingDecoder combined with Decodable's auto-compiler-generated "init" function
+        // NOTE: in the future, if Swift allows us to dynamically generate our own class properties in compiled code on the fly (as it does for Encodable), we can remove the need for Swift struct creators to manually describe their struct's properties' types
+        let decoder = NAPIBridgingDecoder(propertyNamesAndValues: propertyNamesAndValues)
+        do {
+            let result = try targetType.init(from: decoder)
+            return result
+        } catch let error {
+            // TODO: catch the actual Decodable error and pass it along (or at least log/display it properly)
+            fatalError("Type mismatch or other error \(error)")
+        }
+    }
+    
+    private func convertNapiValueToArray(elementNapiValueType: NAPIValueType) throws -> [Any] {
+        let selfAsArrayOfNapiValues: [NAPIValue]
+        do {
+            selfAsArrayOfNapiValues = try self.convertNapiValueToArrayOfNapiValues()
+        } catch (let error) {
+            throw error
+        }
+        
+        var selfAsArray: [Any] = []
+        selfAsArray.reserveCapacity(selfAsArrayOfNapiValues.count)
+        //
+        for napiValue in selfAsArrayOfNapiValues {
+            let element: Any?
+            switch elementNapiValueType {
+            case .object(_, let propertySwiftType):
+                // object type
+                if let propertySwiftType = propertySwiftType {
+                    element = try napiValue.asNAPIValueCompatibleObject(ofType: propertySwiftType)
+                } else {
+                    fatalError("Swift type must be specified for array elements' native objects; found: nil")
+                }
+            case .array(let elementNapiValueType):
+                // array type
+                if let elementNapiValueType = elementNapiValueType {
+                    element = try napiValue.asArrayOfNAPIValueCompatible(elementNapiValueType: elementNapiValueType)
+                } else {
+                    // if elementNapiValueType is nil, then the array is empty
+                    element = []
+                }
+            default:
+                element = try napiValue.asNAPIValueCompatible()
+            }
+
+            if let element = element {
+                selfAsArray.append(element)
+            } else {
+                // if we could not convert the value, throw an error
+                throw NAPIValueError.otherNapiError
+            }
+        }
+        
+        return selfAsArray
+    }
+    
+    private func convertNapiValueToArrayOfNapiValues() throws -> Array<NAPIValue> {
         guard case .array(_) = self.napiValueType else {
             throw NAPIValueError.typeMismatch
         }
                 
         var status: napi_status
         
-        var valueAsArray: Array<NAPIValueCompatible> = []
+        var valueAsArrayOfNapiValues: Array<NAPIValue> = []
         //
         // capture the array length
         var arrayLength: UInt32 = 0
@@ -446,7 +758,7 @@ public class NAPIValue {
         }
         let arrayLengthAsInt = Int(arrayLength)
         //
-        valueAsArray.reserveCapacity(arrayLengthAsInt)
+        valueAsArrayOfNapiValues.reserveCapacity(arrayLengthAsInt)
         // capture each array element
         for indexAsUInt32 in 0..<arrayLength {
             var elementAsNapiValue: napi_value! = nil
@@ -462,13 +774,174 @@ public class NAPIValue {
                 }
             }
 
-            guard let element = try NAPIValue(env: self.env, napiValue: elementAsNapiValue).asNAPIValueCompatible() else {
-                // if we could not convert the value, throw an error
-                throw NAPIValueError.otherNapiError
-            }
-            valueAsArray.append(element)
+            let element = NAPIValue(env: self.env, napiValue: elementAsNapiValue)
+            valueAsArrayOfNapiValues.append(element)
         }
         
-        return valueAsArray
+        return valueAsArrayOfNapiValues
+    }
+    
+    // MARK: Object bridging protocols/functions
+
+    private struct NAPIBridgingKeyedDecodingContainerProtocol<Key: CodingKey>: KeyedDecodingContainerProtocol {
+        var codingPath: [CodingKey] = []
+        
+        var allKeys: [Key] = []
+        
+        let propertyNamesAndValues: [String: Any]
+        
+        init(propertyNamesAndValues: [String: Any]) {
+            self.propertyNamesAndValues = propertyNamesAndValues
+        }
+        
+        func contains(_ key: Key) -> Bool {
+            return self.propertyNamesAndValues.keys.contains(key.stringValue)
+        }
+        
+        func decodeNil(forKey key: Key) throws -> Bool {
+            let keyAsString = key.stringValue
+
+            // capture the value (if the property exists)
+            if self.propertyNamesAndValues.keys.contains(keyAsString) == false {
+                throw DecodingError.keyNotFound(key, DecodingError.Context(codingPath: codingPath, debugDescription: "Property \(keyAsString) cannot be initialized because it was not provided."))
+            }
+            let value = self.propertyNamesAndValues[keyAsString]
+
+            if case Optional<Any>.none = value {
+                // value is nil
+                return true
+            } else {
+                // value is not nil
+                return false
+            }
+        }
+        
+        func decode(_ type: Bool.Type, forKey key: Key) throws -> Bool {
+            return try innerDecode(nativeType: type, napiValueType: .boolean, forKey: key) as! Bool
+        }
+        
+        func decode(_ type: String.Type, forKey key: Key) throws -> String {
+            return try innerDecode(nativeType: type, napiValueType: .string, forKey: key) as! String
+        }
+        
+        func decode(_ type: Double.Type, forKey key: Key) throws -> Double {
+            return try innerDecode(nativeType: type, napiValueType: .number, forKey: key) as! Double
+        }
+        
+        func decode(_ type: Float.Type, forKey key: Key) throws -> Float {
+            fatalError("NOT SUPPORTED")
+        }
+        
+        func decode(_ type: Int.Type, forKey key: Key) throws -> Int {
+            fatalError("NOT SUPPORTED")
+        }
+        
+        func decode(_ type: Int8.Type, forKey key: Key) throws -> Int8 {
+            fatalError("NOT SUPPORTED")
+        }
+        
+        func decode(_ type: Int16.Type, forKey key: Key) throws -> Int16 {
+            fatalError("NOT SUPPORTED")
+        }
+        
+        func decode(_ type: Int32.Type, forKey key: Key) throws -> Int32 {
+            fatalError("NOT SUPPORTED")
+        }
+        
+        func decode(_ type: Int64.Type, forKey key: Key) throws -> Int64 {
+            fatalError("NOT SUPPORTED")
+        }
+        
+        func decode(_ type: UInt.Type, forKey key: Key) throws -> UInt {
+            fatalError("NOT SUPPORTED")
+        }
+        
+        func decode(_ type: UInt8.Type, forKey key: Key) throws -> UInt8 {
+            fatalError("NOT SUPPORTED")
+        }
+        
+        func decode(_ type: UInt16.Type, forKey key: Key) throws -> UInt16 {
+            fatalError("NOT SUPPORTED")
+        }
+        
+        func decode(_ type: UInt32.Type, forKey key: Key) throws -> UInt32 {
+            fatalError("NOT SUPPORTED")
+        }
+        
+        func decode(_ type: UInt64.Type, forKey key: Key) throws -> UInt64 {
+            fatalError("NOT SUPPORTED")
+        }
+        
+        func decode<T>(_ type: T.Type, forKey key: Key) throws -> T where T : Decodable {
+            guard let typeAsNapiValueType = (type as? NAPIValueCompatible.Type)?.napiValueType else {
+                throw DecodingError.typeMismatch(type, DecodingError.Context(codingPath: self.codingPath, debugDescription: "Property \(key.stringValue) cannot be initialized with a value of type \(T.Type.self)"))
+            }
+            
+            return try innerDecode(nativeType: type, napiValueType: typeAsNapiValueType, forKey: key) as! T
+        }
+        
+        // NOTE: this function returns the requested type (or throws an error if the property is missing or the type is mismatched
+        private func innerDecode(nativeType: Any.Type, napiValueType: NAPIValueType, forKey key: Key) throws -> Any? {
+            let keyAsString = key.stringValue
+
+            // capture the value (if the property exists)
+            if self.propertyNamesAndValues.keys.contains(keyAsString) == false {
+                throw DecodingError.keyNotFound(key, DecodingError.Context(codingPath: self.codingPath, debugDescription: "Property \(keyAsString) cannot be initialized because it is missing."))
+            }
+            let value = self.propertyNamesAndValues[keyAsString]
+
+            let nativeTypeAsNapiValueType: NAPIValueType
+            // verify that the type is a NAPIValueCompatible type
+            guard let nativeTypeAsNapiValueCompatibleType = nativeType as? NAPIValueCompatible.Type else {
+                throw DecodingError.typeMismatch(nativeType, DecodingError.Context(codingPath: self.codingPath, debugDescription: "Property \(keyAsString) cannot be initialized with a value of type \(nativeType.self)"))
+            }
+            nativeTypeAsNapiValueType = nativeTypeAsNapiValueCompatibleType.napiValueType
+            
+            if nativeTypeAsNapiValueType.isCompatible(withRhs: napiValueType, disregardRhsOptionals: true) {
+                return value
+            } else {
+                throw DecodingError.typeMismatch(nativeType, DecodingError.Context(codingPath: self.codingPath, debugDescription: "Property \(keyAsString) cannot be initialized with a value of type \(nativeType.self)"))
+            }
+        }
+        
+        func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type, forKey key: Key) throws -> KeyedDecodingContainer<NestedKey> where NestedKey : CodingKey {
+            fatalError("NOT IMPLEMENTED")
+        }
+        
+        func nestedUnkeyedContainer(forKey key: Key) throws -> UnkeyedDecodingContainer {
+            fatalError("NOT IMPLEMENTED")
+        }
+        
+        func superDecoder() throws -> Decoder {
+            fatalError("NOT IMPLEMENTED")
+        }
+        
+        func superDecoder(forKey key: Key) throws -> Decoder {
+            fatalError("NOT IMPLEMENTED")
+        }
+    }
+
+    private struct NAPIBridgingDecoder: Decoder {
+        var codingPath: [CodingKey] = []
+        
+        var userInfo: [CodingUserInfoKey : Any] = [:]
+        
+        let propertyNamesAndValues: [String: Any]
+        
+        init(propertyNamesAndValues: [String: Any]) {
+            self.propertyNamesAndValues = propertyNamesAndValues
+        }
+        
+        func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key : CodingKey {
+            return KeyedDecodingContainer(NAPIBridgingKeyedDecodingContainerProtocol(propertyNamesAndValues: propertyNamesAndValues))
+        }
+        
+        func unkeyedContainer() throws -> UnkeyedDecodingContainer {
+            fatalError("NOT IMPLEMENTED")
+        }
+        
+        func singleValueContainer() throws -> SingleValueDecodingContainer {
+            fatalError("NOT IMPLEMENTED")
+        }
     }
 }

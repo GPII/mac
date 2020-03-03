@@ -18,6 +18,9 @@ public indirect enum NAPIValueType {
     // NOTE: a nullable of type 'nil' denotes a JavaScript "null" with no attached type information
     case nullable(type: NAPIValueType?)
     //
+    // NOTE: for .object, swiftType will be set to null for incoming napi_values (since the type will be resolved when matching against the function's signature); the swiftType must/will be specified in the Swift struct signatures however (see NAPIObjectCompatible.napiValuetype).
+    case object(propertyNamesAndTypes: [String : NAPIValueType], swiftType: NAPIObjectCompatible.Type?)
+    //
     // NOTE: an array of type 'nil' denotes an empty array
     case array(type: NAPIValueType?)
     //
@@ -48,6 +51,51 @@ public indirect enum NAPIValueType {
                     return true
                 } else {
                     return selfType!.isCompatible(withRhs: rhsType!, disregardRhsOptionals: disregardRhsOptionals)
+                }
+            }
+        case .object(let selfPropertyNamesAndTypes, let selfSwiftType):
+            var objectPropertyNamesAndTypesMatch = true 
+
+            if case let .object(rhsPropertyNamesAndTypes, rhsSwiftType) = rhs {
+                // make sure that the object types match (or that one is nil)
+                if (selfSwiftType == nil && rhsSwiftType != nil) ||
+                    (selfSwiftType != nil && rhsSwiftType == nil) {
+                    // if one swiftType is nil, then we consider them a match; this is allowable because incoming napi_values which are objects do not actually have a SwiftType (yet the parameters to which they are passed _do_)
+                } else {
+                    // if both swiftTypes are non-nil, they _must_ be the same type (i.e. we do not do type coersion for objects)
+                    if selfSwiftType.self != rhsSwiftType.self {
+                        objectPropertyNamesAndTypesMatch = false 
+                        break 
+                    }
+                }
+
+                // check that the objects contain the same number of properties (and then compare the property names/types)
+                if selfPropertyNamesAndTypes.count == rhsPropertyNamesAndTypes.count {
+                    // objects contain the same number of properties
+                    
+                    // check that all properties in self are compatible with the same-named properties in rhs (and that the same-named properties exist in rhs)
+                    for selfPropertyNameAndType in selfPropertyNamesAndTypes {
+                        let propertyName = selfPropertyNameAndType.key
+                        if rhsPropertyNamesAndTypes.keys.contains(propertyName) {
+                            if selfPropertyNamesAndTypes[propertyName]!.isCompatible(withRhs: rhsPropertyNamesAndTypes[propertyName]!, disregardRhsOptionals: disregardRhsOptionals) == false {
+                                objectPropertyNamesAndTypesMatch = false 
+                                break
+                            }
+                        } else {
+                            // property does not exist on rhs
+                            objectPropertyNamesAndTypesMatch = false 
+                            break 
+                        }
+                    }                    
+                } else {
+                    // if the numbere of properties don't match, the object types are not a match
+                    objectPropertyNamesAndTypesMatch = false
+                    break 
+                }
+
+                // if the object swiftType matched (or one was nil)--and if all the property names/types matched--then the types are compatible
+                if objectPropertyNamesAndTypesMatch == true {
+                    return true
                 }
             }
         case .array(let selfType):
@@ -122,8 +170,8 @@ extension NAPIValueType {
             if napiValueIsArray == true {
                 return getNAPIValueTypeOfArray(env: env, array: value)
             } else {
-                // non-array objects are unsupported
-                return .unsupported
+                // napiValue is an object (an un-specialized object, not a specific object type which we already handle); create its type by enumerating the names/types of its properties
+                return getNAPIValueTypeOfObject(env: env, object: value)
             }
         case napi_undefined:
             return .undefined
@@ -202,5 +250,67 @@ extension NAPIValueType {
         }
 
         return getNAPIValueType(env: env, value: value)
+    }
+    
+    private static func getNAPIValueTypeOfObject(env: napi_env, object: napi_value) -> NAPIValueType {
+        var status: napi_status
+
+        // make sure that the napi_value is an object
+        var cNapiValuetype: napi_valuetype = napi_undefined
+        status = napi_typeof(env, object, &cNapiValuetype)
+        guard status == napi_ok else {
+            fatalError("Could not determine if argument 'object' represents an object")
+        }
+        
+        precondition(cNapiValuetype == napi_object, "Argument 'object' must represent an object")
+
+        // enumerate the properties of the object
+        var propertyNamesAsCNapiValues: napi_value!
+        status = napi_get_property_names(env, object, &propertyNamesAsCNapiValues)
+        guard status == napi_ok else {
+            // TODO: check for JavaScript errors instead and throw them instead
+            fatalError("Could not get object's properties' names")
+        }
+        //
+        // convert the property names napi_value to an array of NAPIValues
+        let propertyNamesAsNapiValue = NAPIValue(env: env, napiValue: propertyNamesAsCNapiValues, napiValueType: NAPIValueType.array(type: .string))
+        let propertyNamesAsArrayOfNapiValues: [NAPIValue]
+        do {
+            guard let propertyNamesAsArrayOfNapiValuesAsNonOptional = try propertyNamesAsNapiValue.asArrayOfNapiValues() else {
+                fatalError("Failed to enumerate array of object's property names")
+            }
+            propertyNamesAsArrayOfNapiValues = propertyNamesAsArrayOfNapiValuesAsNonOptional
+        } catch {
+            fatalError("Failed to enumerate array of object's property names")
+        }
+        //
+        // capture the properties' names and NAPIValueTypes and store them in a dictionary
+        var propertyNamesAndNapiValueTypes: [String : NAPIValueType] = [:]
+        for propertyNameAsNapiValue in propertyNamesAsArrayOfNapiValues {
+            // capture the property name
+            let propertyName: String
+            do {
+                guard let propertyNameAsNonOptional = try propertyNameAsNapiValue.asString() else {
+                    fatalError("Could not convert object property name into String")
+                }
+                propertyName = propertyNameAsNonOptional
+            } catch {
+                fatalError("Could not convert object property name into String")
+            }
+         
+            // capture the property value's type
+            var propertyValueAsCNapiValue: napi_value! = nil
+            status = napi_get_property(env, object, propertyNameAsNapiValue.napiValue, &propertyValueAsCNapiValue)
+            guard status == napi_ok else {
+                fatalError("Could not determine if argument 'object' represents an object")
+            }
+            let propertyNapiValueType = NAPIValue(env: env, napiValue: propertyValueAsCNapiValue).napiValueType
+            
+            // add the property name and value type to our array
+            propertyNamesAndNapiValueTypes[propertyName] = propertyNapiValueType
+        }
+
+        // NOTE: because object napi_values are typeless, we set the swiftType to nil; when this object is matched against an actual Swift function definition or Swift struct, we will verify that the types match (by comparing the number, names and types of properties)
+        return .object(propertyNamesAndTypes: propertyNamesAndNapiValueTypes, swiftType: nil)
     }
 }
