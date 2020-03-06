@@ -34,11 +34,17 @@ public func Init(env: napi_env!, exports: napi_value!) -> napi_value? {
     // NAPIDisplayFunctions (MorphicDisplay)
     napiPropertyDescriptors.append(contentsOf: NAPIDisplayFunctions.getFunctionsAsPropertyDescriptors(env: env))
 
+    // NAPIInputFunctions (MorphicInput)
+    napiPropertyDescriptors.append(contentsOf: NAPIInputFunctions.getFunctionsAsPropertyDescriptors(env: env))
+
     // NAPILanguageFunctions (MorphicLanguage)
     napiPropertyDescriptors.append(contentsOf: NAPILanguageFunctions.getFunctionsAsPropertyDescriptors(env: env))
 
     // NAPIProcessFunctions (MorphicProcess)
     napiPropertyDescriptors.append(contentsOf: NAPIProcessFunctions.getFunctionsAsPropertyDescriptors(env: env))
+
+    // NAPIWindowFunctions (MorphicWindow)
+    napiPropertyDescriptors.append(contentsOf: NAPIWindowFunctions.getFunctionsAsPropertyDescriptors(env: env))
 
     status = napi_define_properties(env, exports, napiPropertyDescriptors.count, &napiPropertyDescriptors)
     guard status == napi_ok else {

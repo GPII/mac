@@ -648,20 +648,20 @@ public class NAPIValue {
                 case .object(_, let propertySwiftType):
                     // object type
                     if let propertySwiftType = propertySwiftType {
-                        propertyValueAsOptionalNapiValueCompatible = try NAPIValue(env: env, napiValue: propertyValueAsCNapiValue).asNAPIValueCompatibleObject(ofType: propertySwiftType)
+                        propertyValueAsOptionalNapiValueCompatible = try NAPIValue(env: env, napiValue: propertyValueAsCNapiValue).asNAPIValueCompatibleObject(ofType: propertySwiftType) as Any
                     } else {
                         fatalError("Swift type must be specified for Swift property \(propertyName); found: nil")
                     }
                 case .array(let elementNapiValueType):
                     // array type
                     if let elementNapiValueType = elementNapiValueType {
-                        propertyValueAsOptionalNapiValueCompatible = try NAPIValue(env: env, napiValue: propertyValueAsCNapiValue).asArrayOfNAPIValueCompatible(elementNapiValueType: elementNapiValueType)
+                        propertyValueAsOptionalNapiValueCompatible = try NAPIValue(env: env, napiValue: propertyValueAsCNapiValue).asArrayOfNAPIValueCompatible(elementNapiValueType: elementNapiValueType) as Any
                     } else {
                         // if elementNapiValueType is nil, then the array is empty
                         propertyValueAsOptionalNapiValueCompatible = []
                     }
                 default:
-                    propertyValueAsOptionalNapiValueCompatible = try NAPIValue(env: env, napiValue: propertyValueAsCNapiValue).asNAPIValueCompatible()
+                    propertyValueAsOptionalNapiValueCompatible = try NAPIValue(env: env, napiValue: propertyValueAsCNapiValue).asNAPIValueCompatible() as Any
                 }
             } catch (let error) {
                 throw error
