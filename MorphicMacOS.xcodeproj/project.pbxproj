@@ -14,7 +14,7 @@
 		9D41E89F240C755D004A8E98 /* NAPIObjectCompatible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D41E89E240C755D004A8E98 /* NAPIObjectCompatible.swift */; };
 		9D540F41241468AA002CBBB7 /* NAPIBridgingCoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D540F40241468AA002CBBB7 /* NAPIBridgingCoding.swift */; };
 		9D540F43241468B1002CBBB7 /* NAPISwiftBridgeJavaScriptThrowableError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D540F42241468B1002CBBB7 /* NAPISwiftBridgeJavaScriptThrowableError.swift */; };
-		9D540F4524147110002CBBB7 /* NAPIJavaScriptFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D540F4424147110002CBBB7 /* NAPIJavaScriptFunction.swift */; };
+		9D683E5724147A9C00411E0D /* NAPIJavaScriptFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D683E5624147A9C00411E0D /* NAPIJavaScriptFunction.swift */; };
 		9DAB111F2411E25C00EDA979 /* MorphicInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DAB111E2411E25C00EDA979 /* MorphicInput.swift */; };
 		9DAB11212411E26600EDA979 /* NAPIInputFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DAB11202411E26600EDA979 /* NAPIInputFunctions.swift */; };
 		9DAB11292411E7A200EDA979 /* MorphicWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DAB11282411E7A200EDA979 /* MorphicWindow.swift */; };
@@ -46,7 +46,7 @@
 		9D41E89E240C755D004A8E98 /* NAPIObjectCompatible.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPIObjectCompatible.swift; sourceTree = "<group>"; };
 		9D540F40241468AA002CBBB7 /* NAPIBridgingCoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPIBridgingCoding.swift; sourceTree = "<group>"; };
 		9D540F42241468B1002CBBB7 /* NAPISwiftBridgeJavaScriptThrowableError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPISwiftBridgeJavaScriptThrowableError.swift; sourceTree = "<group>"; };
-		9D540F4424147110002CBBB7 /* NAPIJavaScriptFunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPIJavaScriptFunction.swift; sourceTree = "<group>"; };
+		9D683E5624147A9C00411E0D /* NAPIJavaScriptFunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPIJavaScriptFunction.swift; sourceTree = "<group>"; };
 		9DAB111E2411E25C00EDA979 /* MorphicInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MorphicInput.swift; sourceTree = "<group>"; };
 		9DAB11202411E26600EDA979 /* NAPIInputFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAPIInputFunctions.swift; sourceTree = "<group>"; };
 		9DAB11282411E7A200EDA979 /* MorphicWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MorphicWindow.swift; sourceTree = "<group>"; };
@@ -166,7 +166,7 @@
 				9DCE645523BA99EE00243A18 /* include */,
 				9D2EE03323E8FC9F00F2F1D1 /* NAPIFunctionHelpers.swift */,
 				9D2EE03523E908AB00F2F1D1 /* NAPIJavaScriptError.swift */,
-				9D540F4424147110002CBBB7 /* NAPIJavaScriptFunction.swift */,
+				9D683E5624147A9C00411E0D /* NAPIJavaScriptFunction.swift */,
 				9D41E89E240C755D004A8E98 /* NAPIObjectCompatible.swift */,
 				9DCE646523BD863900243A18 /* NAPIProperty.swift */,
 				9DCE646723BD8DBE00243A18 /* NAPIValue.swift */,
@@ -313,7 +313,7 @@
 				9D540F41241468AA002CBBB7 /* NAPIBridgingCoding.swift in Sources */,
 				9DE3F77E23FCD18400634AA2 /* MorphicProcess.swift in Sources */,
 				9DE3F79023FCFA5A00634AA2 /* NAPILanguageFunctions.swift in Sources */,
-				9D540F4524147110002CBBB7 /* NAPIJavaScriptFunction.swift in Sources */,
+				9D683E5724147A9C00411E0D /* NAPIJavaScriptFunction.swift in Sources */,
 				9DCE646623BD863900243A18 /* NAPIProperty.swift in Sources */,
 				9DAB112B2411E7AA00EDA979 /* NAPIWindowFunctions.swift in Sources */,
 				9D2EE03423E8FC9F00F2F1D1 /* NAPIFunctionHelpers.swift in Sources */,
