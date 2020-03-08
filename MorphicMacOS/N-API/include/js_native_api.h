@@ -52,6 +52,7 @@ EXTERN_C_START
 
 // Getters for defined singletons
 NAPI_EXTERN napi_status napi_get_null(napi_env env, napi_value* result);
+NAPI_EXTERN napi_status napi_get_global(napi_env env, napi_value* result);
 NAPI_EXTERN napi_status napi_get_boolean(napi_env env,
                                          bool value,
                                          napi_value* result);
@@ -74,6 +75,18 @@ NAPI_EXTERN napi_status napi_create_function(napi_env env,
                                              napi_callback cb,
                                              void* data,
                                              napi_value* result);
+NAPI_EXTERN napi_status napi_create_error(napi_env env,
+                                          napi_value code,
+                                          napi_value msg,
+                                          napi_value* result);
+NAPI_EXTERN napi_status napi_create_type_error(napi_env env,
+                                               napi_value code,
+                                               napi_value msg,
+                                               napi_value* result);
+NAPI_EXTERN napi_status napi_create_range_error(napi_env env,
+                                                napi_value code,
+                                                napi_value msg,
+                                                napi_value* result);
 
 // Methods to get the native napi_value from Primitive type
 NAPI_EXTERN napi_status napi_typeof(napi_env env,
@@ -101,6 +114,10 @@ NAPI_EXTERN napi_status napi_set_property(napi_env env,
                                           napi_value object,
                                           napi_value key,
                                           napi_value value);
+NAPI_EXTERN napi_status napi_has_property(napi_env env,
+                                          napi_value object,
+                                          napi_value key,
+                                          bool* result);
 NAPI_EXTERN napi_status napi_get_property(napi_env env,
                                           napi_value object,
                                           napi_value key,
@@ -127,6 +144,14 @@ NAPI_EXTERN napi_status napi_get_array_length(napi_env env,
                                               napi_value value,
                                               uint32_t* result);
 
+// Methods to work with Functions
+NAPI_EXTERN napi_status napi_call_function(napi_env env,
+                                           napi_value recv,
+                                           napi_value func,
+                                           size_t argc,
+                                           const napi_value* argv,
+                                           napi_value* result);
+
 // Methods to work with napi_callbacks
 
 // Gets all callback info in a single call. (Ugly, but faster.)
@@ -138,6 +163,21 @@ NAPI_EXTERN napi_status napi_get_cb_info(
     napi_value* argv,  // [out] Array of values
     napi_value* this_arg,  // [out] Receives the JS 'this' arg for the call
     void** data);          // [out] Receives the data pointer for the callback.
+
+// Methods to support error handling
+NAPI_EXTERN napi_status napi_throw(napi_env env, napi_value error);
+NAPI_EXTERN napi_status napi_throw_error(napi_env env,
+                                         const char* code,
+                                         const char* msg);
+NAPI_EXTERN napi_status napi_throw_type_error(napi_env env,
+                                         const char* code,
+                                         const char* msg);
+NAPI_EXTERN napi_status napi_throw_range_error(napi_env env,
+                                         const char* code,
+                                         const char* msg);
+NAPI_EXTERN napi_status napi_is_error(napi_env env,
+                                      napi_value value,
+                                      bool* result);
 
 #if NAPI_VERSION >= 5
 

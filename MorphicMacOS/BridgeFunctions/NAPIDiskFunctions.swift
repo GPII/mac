@@ -10,32 +10,29 @@
 // Department of Education, and you should not assume endorsement by the
 // Federal Government.
 
-import Foundation
-
 class NAPIDiskFunctions {
     // MARK: - Swift NAPI bridge setup
 
-    static func getFunctionsAsPropertyDescriptors(env: napi_env!) -> [napi_property_descriptor] {
+    static func getFunctionsAsPropertyDescriptors(cNapiEnv: napi_env!) -> [napi_property_descriptor] {
         var result: [napi_property_descriptor] = []
         
         // getAllUsbDriveMountPaths
-        result.append(NAPIProperty.createMethodProperty(env: env, name: "getAllUsbDriveMountPaths", method: getAllUsbDriveMountPaths).napiPropertyDescriptor)
+        result.append(NAPIProperty.createMethodProperty(cNapiEnv: cNapiEnv, name: "getAllUsbDriveMountPaths", method: getAllUsbDriveMountPaths).cNapiPropertyDescriptor)
         
         // openDirectories
-        result.append(NAPIProperty.createMethodProperty(env: env, name: "openDirectories", method: openDirectories).napiPropertyDescriptor)
+        result.append(NAPIProperty.createMethodProperty(cNapiEnv: cNapiEnv, name: "openDirectories", method: openDirectories).cNapiPropertyDescriptor)
         
         // safelyEjectUsbDrives
-        result.append(NAPIProperty.createMethodProperty(env: env, name: "safelyEjectUsbDrives", method: safelyEjectUsbDrives).napiPropertyDescriptor)
+        result.append(NAPIProperty.createMethodProperty(cNapiEnv: cNapiEnv, name: "safelyEjectUsbDrives", method: safelyEjectUsbDrives).cNapiPropertyDescriptor)
 
         return result
     }
 
     // MARK: - Swift NAPI bridge functions
 
-    public static func getAllUsbDriveMountPaths() -> [String] {
+    public static func getAllUsbDriveMountPaths() throws -> [String] {
         guard let result = MorphicDisk.getAllUsbDriveMountPaths() else {
-            // TODO: raise a JavaScript error instead of failing
-            fatalError("Could not retrieve paths")
+            throw NAPISwiftBridgeJavaScriptThrowableError.error(message: "Could not retrieve a list of all USB drive mount paths")
         }
         
         return result
@@ -48,28 +45,40 @@ class NAPIDiskFunctions {
         }
     }
     
-    public static func safelyEjectUsbDrives(_ usbDriveMountingPaths: [String]) {
+    public static func safelyEjectUsbDrives(_ usbDriveMountingPaths: [String], _ callback: NAPIJavaScriptFunction?) throws {
+        let numberOfDisks = usbDriveMountingPaths.count
+        var numberOfDiskEjectsAttempted = 0
+        var failedMountPaths: [String] = []
+        
         // unmount and eject disk using disk arbitration
         for mountPath in usbDriveMountingPaths {
             do {
                 try MorphicDisk.ejectDisk(mountPath: mountPath) {
                     ejectedDiskPath, success in
                     //
+                    numberOfDiskEjectsAttempted += 1
+                    //
                     if success == true {
                         // we have ejected the disk at mount path: 'ejectedDiskPath'
-                        // NOTE: in the future, we could provide this information to JavaScript via a callback or promise
                     } else {
                         // we failed to eject the disk at mount path: 'ejectedDiskPath'
-                        NSLog("Failed to eject the disk at mount path: \(ejectedDiskPath)")
-                        // NOTE: in the future, we could provide this information to JavaScript via a callback or promise
+                        failedMountPaths.append(mountPath)
+                    }
+                    
+                    if numberOfDiskEjectsAttempted == numberOfDisks {
+                        // if a callback was provided, call it with success/failure (and an array of all mounting paths which failed)
+                        if failedMountPaths.count == 0 {
+                            callback?.call(args: [true, Array<String>?(nil)])
+                        } else {
+                            callback?.call(args: [false, failedMountPaths])
+                        }
                     }
                 }
-            } catch let error {
-                // we failed to eject the disk at mount path: 'mountPath'; the specific error is: 'error'
-                NSLog("Failed to eject the disk at mount path: \(mountPath); error: \(error)")
-                // NOTE: in the future, we could provide this information to JavaScript via a callback or promise
+            } catch MorphicDisk.EjectDiskError.volumeNotFound {
+                throw NAPISwiftBridgeJavaScriptThrowableError.error(message: "Failed to eject the disk at mount path: \(mountPath); volume was not found")
+            } catch MorphicDisk.EjectDiskError.otherError {
+                throw NAPISwiftBridgeJavaScriptThrowableError.error(message: "Failed to eject the disk at mount path: \(mountPath); misc. error encountered")
             }
         }
     }
-    
 }

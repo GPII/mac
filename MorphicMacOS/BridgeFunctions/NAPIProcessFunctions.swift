@@ -13,14 +13,14 @@
 class NAPIProcessFunctions {
     // MARK: - Swift NAPI bridge setup
 
-    static func getFunctionsAsPropertyDescriptors(env: napi_env!) -> [napi_property_descriptor] {
+    static func getFunctionsAsPropertyDescriptors(cNapiEnv: napi_env!) -> [napi_property_descriptor] {
         var result: [napi_property_descriptor] = []
         
         // getAllLaunchDaemonsAndAgentsAsServiceNames
-        result.append(NAPIProperty.createMethodProperty(env: env, name: "getAllLaunchDaemonsAndAgentsAsServiceNames", method: getAllLaunchDaemonsAndAgentsAsServiceNames).napiPropertyDescriptor)
+        result.append(NAPIProperty.createMethodProperty(cNapiEnv: cNapiEnv, name: "getAllLaunchDaemonsAndAgentsAsServiceNames", method: getAllLaunchDaemonsAndAgentsAsServiceNames).cNapiPropertyDescriptor)
         
         // restartServicesViaLaunchctl
-        result.append(NAPIProperty.createMethodProperty(env: env, name: "restartServicesViaLaunchctl", method: restartServicesViaLaunchctl).napiPropertyDescriptor)
+        result.append(NAPIProperty.createMethodProperty(cNapiEnv: cNapiEnv, name: "restartServicesViaLaunchctl", method: restartServicesViaLaunchctl).cNapiPropertyDescriptor)
 
         return result
     }

@@ -10,22 +10,20 @@
 // Department of Education, and you should not assume endorsement by the
 // Federal Government.
 
-import Foundation
-
 class NAPIDisplayFunctions {
     // MARK: - Swift NAPI bridge setup
 
-    static func getFunctionsAsPropertyDescriptors(env: napi_env!) -> [napi_property_descriptor] {
+    static func getFunctionsAsPropertyDescriptors(cNapiEnv: napi_env!) -> [napi_property_descriptor] {
         var result: [napi_property_descriptor] = []
         
         // getDisplayModes
-        result.append(NAPIProperty.createMethodProperty(env: env, name: "getAllDisplayModes", method: getAllDisplayModes).napiPropertyDescriptor)
+        result.append(NAPIProperty.createMethodProperty(cNapiEnv: cNapiEnv, name: "getAllDisplayModes", method: getAllDisplayModes).cNapiPropertyDescriptor)
 
         // getCurrentDisplayMode
-        result.append(NAPIProperty.createMethodProperty(env: env, name: "getCurrentDisplayMode", method: getCurrentDisplayMode).napiPropertyDescriptor)
+        result.append(NAPIProperty.createMethodProperty(cNapiEnv: cNapiEnv, name: "getCurrentDisplayMode", method: getCurrentDisplayMode).cNapiPropertyDescriptor)
 
         // setCurrentDisplayMode
-        result.append(NAPIProperty.createMethodProperty(env: env, name: "setCurrentDisplayMode", method: setCurrentDisplayMode).napiPropertyDescriptor)
+        result.append(NAPIProperty.createMethodProperty(cNapiEnv: cNapiEnv, name: "setCurrentDisplayMode", method: setCurrentDisplayMode).cNapiPropertyDescriptor)
 
         return result
     }
@@ -82,15 +80,13 @@ class NAPIDisplayFunctions {
         }
     }
 
-    public static func getAllDisplayModes() -> [NAPIDisplayMode] {
+    public static func getAllDisplayModes() throws -> [NAPIDisplayMode] {
         guard let mainDisplayId = MorphicDisplay.getMainDisplayId() else {
-            // TODO: consider throwing a JavaScript error, since we couldn't get the main display ID
-            return []
+            throw NAPISwiftBridgeJavaScriptThrowableError.error(message: "Could not get main display id")
         }
         
         guard let allDisplayModes = MorphicDisplay.getAllDisplayModes(for: mainDisplayId) else {
-            // TODO: consider throwing a JavaScript error, since we couldn't get the display modes
-            return []
+            throw NAPISwiftBridgeJavaScriptThrowableError.error(message: "Could not get list of display modes for main display")
         }
         
         var napiDisplayModes: [NAPIDisplayMode] = []
@@ -103,47 +99,38 @@ class NAPIDisplayFunctions {
         return napiDisplayModes
     }
     
-    public static func getCurrentDisplayMode() -> NAPIDisplayMode {
+    public static func getCurrentDisplayMode() throws -> NAPIDisplayMode {
         guard let mainDisplayId = MorphicDisplay.getMainDisplayId() else {
-            // TODO: consider throwing a JavaScript error, since we couldn't get the main display ID
-            fatalError("Could not retrieve the ID of the main display")
+            throw NAPISwiftBridgeJavaScriptThrowableError.error(message: "Could not get main display id")
         }
 
         guard let currentDisplayMode = MorphicDisplay.getCurrentDisplayMode(for: mainDisplayId) else {
-            // TODO: consider throwing a JavaScript error, since we couldn't get the current display ID
-            fatalError("Could not retrieve the main display's current display mode")
+            throw NAPISwiftBridgeJavaScriptThrowableError.error(message: "Could not get current display mode for main display")
         }
 
         let currentNapiDisplayMode = NAPIDisplayMode(displayMode: currentDisplayMode)
         return currentNapiDisplayMode
     }
     
-    public static func setCurrentDisplayMode(_ newNapiDisplayMode: NAPIDisplayMode) {
+    public static func setCurrentDisplayMode(_ newNapiDisplayMode: NAPIDisplayMode) throws {
         guard let mainDisplayId = MorphicDisplay.getMainDisplayId() else {
-            // TODO: consider throwing a JavaScript error, since we couldn't get the main display ID
-            fatalError("Could not retrieve the ID of the main display")
+            throw NAPISwiftBridgeJavaScriptThrowableError.error(message: "Could not get main display id")
         }
 
         guard let newDisplayMode = MorphicDisplay.DisplayMode(napiDisplayMode: newNapiDisplayMode) else {
-            // TODO: consider throwing a JavaScript error, since the provided display mode could not be converted
-            fatalError("Argument 'newNapiDisplayMode' is not valid and could not be converted to the corresponding native type")
+            throw NAPISwiftBridgeJavaScriptThrowableError.rangeError(message: "Argument 'newNapiDisplayMode' contains values which are out of range")
         }
         
         do {
             try MorphicDisplay.setCurrentDisplayMode(for: mainDisplayId, to: newDisplayMode)
         } catch MorphicDisplay.SetCurrentDisplayModeError.invalidDisplayMode {
-            // TODO: consider throwing a JavaScript error
-            fatalError("Display mode (in argument 'newNapiDisplayMode' is invalid")
+            throw NAPISwiftBridgeJavaScriptThrowableError.error(message: "Argument 'newNapiDisplayMode' is not a valid display mode")
         } catch MorphicDisplay.SetCurrentDisplayModeError.otherError {
-            // TODO: consider throwing a JavaScript error
-            return
-        } catch {
-            // TODO: consider throwing a JavaScript error
-            return
+            throw NAPISwiftBridgeJavaScriptThrowableError.error(message: "Could not set current display mode due to misc. error")
         }
     }
 }
-
+//
 extension MorphicDisplay.DisplayMode {
     init?(napiDisplayMode: NAPIDisplayFunctions.NAPIDisplayMode) {
         guard let ioDisplayModeId = Int32(exactly: napiDisplayMode.ioDisplayModeId) else {

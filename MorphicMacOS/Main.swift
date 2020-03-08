@@ -26,25 +26,25 @@ public func Init(env: napi_env!, exports: napi_value!) -> napi_value? {
     var napiPropertyDescriptors: [napi_property_descriptor] = []
 
     // NAPIAudioFunctions (MorphicAudio)
-    napiPropertyDescriptors.append(contentsOf: NAPIAudioFunctions.getFunctionsAsPropertyDescriptors(env: env))
+    napiPropertyDescriptors.append(contentsOf: NAPIAudioFunctions.getFunctionsAsPropertyDescriptors(cNapiEnv: env))
 
     // NAPIDiskFunctions (MorphicDisk)
-    napiPropertyDescriptors.append(contentsOf: NAPIDiskFunctions.getFunctionsAsPropertyDescriptors(env: env))
+    napiPropertyDescriptors.append(contentsOf: NAPIDiskFunctions.getFunctionsAsPropertyDescriptors(cNapiEnv: env))
 
     // NAPIDisplayFunctions (MorphicDisplay)
-    napiPropertyDescriptors.append(contentsOf: NAPIDisplayFunctions.getFunctionsAsPropertyDescriptors(env: env))
+    napiPropertyDescriptors.append(contentsOf: NAPIDisplayFunctions.getFunctionsAsPropertyDescriptors(cNapiEnv: env))
 
     // NAPIInputFunctions (MorphicInput)
-    napiPropertyDescriptors.append(contentsOf: NAPIInputFunctions.getFunctionsAsPropertyDescriptors(env: env))
+    napiPropertyDescriptors.append(contentsOf: NAPIInputFunctions.getFunctionsAsPropertyDescriptors(cNapiEnv: env))
 
     // NAPILanguageFunctions (MorphicLanguage)
-    napiPropertyDescriptors.append(contentsOf: NAPILanguageFunctions.getFunctionsAsPropertyDescriptors(env: env))
+    napiPropertyDescriptors.append(contentsOf: NAPILanguageFunctions.getFunctionsAsPropertyDescriptors(cNapiEnv: env))
 
     // NAPIProcessFunctions (MorphicProcess)
-    napiPropertyDescriptors.append(contentsOf: NAPIProcessFunctions.getFunctionsAsPropertyDescriptors(env: env))
+    napiPropertyDescriptors.append(contentsOf: NAPIProcessFunctions.getFunctionsAsPropertyDescriptors(cNapiEnv: env))
 
     // NAPIWindowFunctions (MorphicWindow)
-    napiPropertyDescriptors.append(contentsOf: NAPIWindowFunctions.getFunctionsAsPropertyDescriptors(env: env))
+    napiPropertyDescriptors.append(contentsOf: NAPIWindowFunctions.getFunctionsAsPropertyDescriptors(cNapiEnv: env))
 
     status = napi_define_properties(env, exports, napiPropertyDescriptors.count, &napiPropertyDescriptors)
     guard status == napi_ok else {

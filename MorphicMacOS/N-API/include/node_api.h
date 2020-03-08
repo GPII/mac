@@ -72,6 +72,12 @@ typedef struct {
   NAPI_MODULE_X(modname, regfunc, NULL, 0)  // NOLINT (readability/null_usage)
 
 
+EXTERN_C_START
+
+NAPI_EXTERN NAPI_NO_RETURN void napi_fatal_error(const char* location,
+                                                 size_t location_len,
+                                                 const char* message,
+                                                 size_t message_len);
 
 
 

@@ -24,6 +24,10 @@ public indirect enum NAPIValueType {
     // NOTE: an array of type 'nil' denotes an empty array
     case array(type: NAPIValueType?)
     //
+    case function
+    //
+    case error
+    //
     case undefined
     //
     // NOTE: 'unsupported' denotes a type which we do not support
@@ -107,6 +111,14 @@ public indirect enum NAPIValueType {
                     return selfType!.isCompatible(withRhs: rhsType!, disregardRhsOptionals: disregardRhsOptionals)
                 }
             }
+        case .function:
+            if case .function = rhs {
+                return true
+            }
+        case .error:
+            if case .error = rhs {
+                return true
+            }
         case .undefined:
             if case .undefined = rhs {
                 return true
@@ -140,17 +152,17 @@ public indirect enum NAPIValueType {
 }
 
 extension NAPIValueType {
-    public static func getNAPIValueType(env: napi_env, value: napi_value) -> NAPIValueType {
-        var valuetype: napi_valuetype = napi_undefined
+    public static func getNAPIValueType(cNapiEnv: napi_env, cNapiValue: napi_value) -> NAPIValueType {
+        var cNapiValuetype: napi_valuetype = napi_undefined
 
         var status: napi_status
 
-        status = napi_typeof(env, value, &valuetype)
+        status = napi_typeof(cNapiEnv, cNapiValue, &cNapiValuetype)
         guard status == napi_ok else {
             fatalError("Could not get type of napi value")
         }
 
-        switch valuetype {
+        switch cNapiValuetype {
         case napi_boolean:
             return .boolean
         case napi_number:
@@ -161,18 +173,31 @@ extension NAPIValueType {
             return .nullable(type: nil)
         case napi_object:
             // determine if this object is an array
-            var napiValueIsArray: Bool = false
-            status = napi_is_array(env, value, &napiValueIsArray)
+            var cNapiValueIsArray: Bool = false
+            status = napi_is_array(cNapiEnv, cNapiValue, &cNapiValueIsArray)
             guard status == napi_ok else {
                 fatalError("Could not get type of napi value")
             }
             //
-            if napiValueIsArray == true {
-                return getNAPIValueTypeOfArray(env: env, array: value)
-            } else {
-                // napiValue is an object (an un-specialized object, not a specific object type which we already handle); create its type by enumerating the names/types of its properties
-                return getNAPIValueTypeOfObject(env: env, object: value)
+            if cNapiValueIsArray == true {
+                return getNapiValueTypeOfArray(cNapiEnv: cNapiEnv, arrayAsCNapiValue: cNapiValue)
             }
+            
+            // determine if this object is an error
+            var cNapiValueIsError: Bool = false
+            status = napi_is_error(cNapiEnv, cNapiValue, &cNapiValueIsError)
+            guard status == napi_ok else {
+                fatalError("Could not get type of napi value")
+            }
+            //
+            if cNapiValueIsError == true {
+                return .error
+            }
+
+            // otherwise, napiValue is an object (an un-specialized object, not a specific object type which we already handle); create its type by enumerating the names/types of its properties
+            return getNapiValueTypeOfObject(cNapiEnv: cNapiEnv, objectAsCNapiValue: cNapiValue)
+        case napi_function:
+            return .function
         case napi_undefined:
             return .undefined
         default:
@@ -182,21 +207,21 @@ extension NAPIValueType {
     }
 
     // NOTE: this function returns nil if it does not know the napi_valuetype of the element
-    private static func getNAPIValueTypeOfArray(env: napi_env, array: napi_value) -> NAPIValueType {
+    private static func getNapiValueTypeOfArray(cNapiEnv: napi_env, arrayAsCNapiValue: napi_value) -> NAPIValueType {
         var status: napi_status
 
         // make sure that the napi_value is an array
         var isArray: Bool = false
-        status = napi_is_array(env, array, &isArray)
+        status = napi_is_array(cNapiEnv, arrayAsCNapiValue, &isArray)
         guard status == napi_ok else {
-            fatalError("Could not determine if array represents an array")
+            fatalError("Could not determine if argument 'arrayAsCNapiValue' represents an array")
         }
         
-        precondition(isArray == true, "Argument 'array_of_values' must represent an array")
+        precondition(isArray == true, "Argument 'arrayAsCNapiValue' must represent an array")
 
         // make sure that the array contains elements
         var lengthOfArray : UInt32 = 0
-        status = napi_get_array_length(env, array, &lengthOfArray)
+        status = napi_get_array_length(cNapiEnv, arrayAsCNapiValue, &lengthOfArray)
         guard status == napi_ok else {
             fatalError("Could not get element count of array")
         }
@@ -208,7 +233,7 @@ extension NAPIValueType {
         precondition(lengthOfArray <= Int.max, "Arrays may not have a length greater than Int.max")
 
         // get type of first element
-        let napiValueTypeOfFirstElement = getNAPIValueTypeOfArrayElement(env: env, array: array, index: 0)
+        let napiValueTypeOfFirstElement = getNapiValueTypeOfArrayElement(cNapiEnv: cNapiEnv, arrayAsCNapiValue: arrayAsCNapiValue, index: 0)
         if napiValueTypeOfFirstElement == .unsupported {
             // if the first element is an unsupported type, the array itself is an unsupported type
             // NOTE: we do not return ".array(unsupported)" since we do not know if the array's elements are of the same unsupported type
@@ -219,7 +244,7 @@ extension NAPIValueType {
 
         // get types of all subsequent elements (to ensure that they are all the same type...as we do not support mixed types in arrays)
         for index in 1..<lengthOfArray {
-            let napiValueTypeOfElement = getNAPIValueTypeOfArrayElement(env: env, array: array, index: index)
+            let napiValueTypeOfElement = getNapiValueTypeOfArrayElement(cNapiEnv: cNapiEnv, arrayAsCNapiValue: arrayAsCNapiValue, index: index)
             if napiValueTypeOfElement != napiValueTypeOfAllElements {
                 // if the element types are not the same, the array itself is an unsupported type
                 // NOTE: we do not return ".array(unsupported)" since we do not know if the array's elements are of the same unsupported type
@@ -240,40 +265,40 @@ extension NAPIValueType {
         return .array(type: napiValueTypeOfAllElements)
     }
     
-    private static func getNAPIValueTypeOfArrayElement(env: napi_env, array: napi_value, index: UInt32) -> NAPIValueType {
+    private static func getNapiValueTypeOfArrayElement(cNapiEnv: napi_env, arrayAsCNapiValue: napi_value, index: UInt32) -> NAPIValueType {
         var status: napi_status
 
-        var value: napi_value! = nil
-        status = napi_get_element(env, array, index, &value)
-        guard status == napi_ok, value != nil else {
+        var cNapiValue: napi_value! = nil
+        status = napi_get_element(cNapiEnv, arrayAsCNapiValue, index, &cNapiValue)
+        guard status == napi_ok, cNapiValue != nil else {
             fatalError("Could not get type of napi array element at specified index")
         }
 
-        return getNAPIValueType(env: env, value: value)
+        return getNAPIValueType(cNapiEnv: cNapiEnv, cNapiValue: cNapiValue)
     }
     
-    private static func getNAPIValueTypeOfObject(env: napi_env, object: napi_value) -> NAPIValueType {
+    private static func getNapiValueTypeOfObject(cNapiEnv: napi_env, objectAsCNapiValue: napi_value) -> NAPIValueType {
         var status: napi_status
 
         // make sure that the napi_value is an object
         var cNapiValuetype: napi_valuetype = napi_undefined
-        status = napi_typeof(env, object, &cNapiValuetype)
+        status = napi_typeof(cNapiEnv, objectAsCNapiValue, &cNapiValuetype)
         guard status == napi_ok else {
-            fatalError("Could not determine if argument 'object' represents an object")
+            fatalError("Could not determine if argument 'objectAsCNapiValue' represents an object")
         }
         
-        precondition(cNapiValuetype == napi_object, "Argument 'object' must represent an object")
+        precondition(cNapiValuetype == napi_object, "Argument 'objectAsCNapiValue' must represent an object")
 
         // enumerate the properties of the object
-        var propertyNamesAsCNapiValues: napi_value!
-        status = napi_get_property_names(env, object, &propertyNamesAsCNapiValues)
+        var propertyNamesAsCNapiValue: napi_value!
+        status = napi_get_property_names(cNapiEnv, objectAsCNapiValue, &propertyNamesAsCNapiValue)
         guard status == napi_ok else {
             // TODO: check for JavaScript errors instead and throw them instead
             fatalError("Could not get object's properties' names")
         }
         //
         // convert the property names napi_value to an array of NAPIValues
-        let propertyNamesAsNapiValue = NAPIValue(env: env, napiValue: propertyNamesAsCNapiValues, napiValueType: NAPIValueType.array(type: .string))
+        let propertyNamesAsNapiValue = NAPIValue(cNapiEnv: cNapiEnv, cNapiValue: propertyNamesAsCNapiValue, napiValueType: NAPIValueType.array(type: .string))
         let propertyNamesAsArrayOfNapiValues: [NAPIValue]
         do {
             guard let propertyNamesAsArrayOfNapiValuesAsNonOptional = try propertyNamesAsNapiValue.asArrayOfNapiValues() else {
@@ -300,11 +325,11 @@ extension NAPIValueType {
          
             // capture the property value's type
             var propertyValueAsCNapiValue: napi_value! = nil
-            status = napi_get_property(env, object, propertyNameAsNapiValue.napiValue, &propertyValueAsCNapiValue)
+            status = napi_get_property(cNapiEnv, objectAsCNapiValue, propertyNameAsNapiValue.cNapiValue, &propertyValueAsCNapiValue)
             guard status == napi_ok else {
-                fatalError("Could not determine if argument 'object' represents an object")
+                fatalError("Could not determine if argument 'objectAsCNapiValue' represents an object")
             }
-            let propertyNapiValueType = NAPIValue(env: env, napiValue: propertyValueAsCNapiValue).napiValueType
+            let propertyNapiValueType = NAPIValue(cNapiEnv: cNapiEnv, cNapiValue: propertyValueAsCNapiValue).napiValueType
             
             // add the property name and value type to our array
             propertyNamesAndNapiValueTypes[propertyName] = propertyNapiValueType

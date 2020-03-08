@@ -13,10 +13,10 @@
 import Foundation
 
 public class NAPIProperty {
-    public let napiPropertyDescriptor: napi_property_descriptor
+    public let cNapiPropertyDescriptor: napi_property_descriptor
 
-    private init(napiPropertyDescriptor: napi_property_descriptor) {
-        self.napiPropertyDescriptor = napiPropertyDescriptor
+    private init(cNapiPropertyDescriptor: napi_property_descriptor) {
+        self.cNapiPropertyDescriptor = cNapiPropertyDescriptor
     }
         
     //
@@ -24,76 +24,76 @@ public class NAPIProperty {
     /* createMethodProperty: 0 to 3 parameter varieties (without return type) */
     // NOTE: we MUST support up to 'maximumArgumentsInNativeFunctions' parameters (from NAPIFunctionHelpers)
 
-    public static func createMethodProperty(env: napi_env, name: String, method: @escaping () throws -> Void) -> NAPIProperty {
+    public static func createMethodProperty(cNapiEnv: napi_env, name: String, method: @escaping () throws -> Void) -> NAPIProperty {
         let swiftBridgeFunction = createSwiftBridgeFunction(method: method)
         let napiArgumentTypes: [NAPIValueType] = []
 
-        return createMethodProperty(env: env, name: name, swiftBridgeFunction: swiftBridgeFunction, napiArgumentTypes: napiArgumentTypes)
+        return createMethodProperty(cNapiEnv: cNapiEnv, name: name, swiftBridgeFunction: swiftBridgeFunction, napiArgumentTypes: napiArgumentTypes)
     }
     //
-    public static func createMethodProperty<T0: NAPIValueCompatible>(env: napi_env, name: String, method: @escaping (_ arg0: T0) throws -> Void) -> NAPIProperty {
+    public static func createMethodProperty<T0: NAPIValueCompatible>(cNapiEnv: napi_env, name: String, method: @escaping (_ arg0: T0) throws -> Void) -> NAPIProperty {
         let swiftBridgeFunction = createSwiftBridgeFunction(method: method)
         let napiArgumentTypes: [NAPIValueType] = [T0.napiValueType]
         
-        return createMethodProperty(env: env, name: name, swiftBridgeFunction: swiftBridgeFunction, napiArgumentTypes: napiArgumentTypes)
+        return createMethodProperty(cNapiEnv: cNapiEnv, name: name, swiftBridgeFunction: swiftBridgeFunction, napiArgumentTypes: napiArgumentTypes)
     }
     //
-    public static func createMethodProperty<T0: NAPIValueCompatible, T1: NAPIValueCompatible>(env: napi_env, name: String, method: @escaping (_ arg0: T0, _ arg1: T1) throws -> Void) -> NAPIProperty {
+    public static func createMethodProperty<T0: NAPIValueCompatible, T1: NAPIValueCompatible>(cNapiEnv: napi_env, name: String, method: @escaping (_ arg0: T0, _ arg1: T1) throws -> Void) -> NAPIProperty {
         let swiftBridgeFunction = createSwiftBridgeFunction(method: method)
         let napiArgumentTypes: [NAPIValueType] = [T0.napiValueType, T1.napiValueType]
         
-        return createMethodProperty(env: env, name: name, swiftBridgeFunction: swiftBridgeFunction, napiArgumentTypes: napiArgumentTypes)
+        return createMethodProperty(cNapiEnv: cNapiEnv, name: name, swiftBridgeFunction: swiftBridgeFunction, napiArgumentTypes: napiArgumentTypes)
     }
     //
-    public static func createMethodProperty<T0: NAPIValueCompatible, T1: NAPIValueCompatible, T2: NAPIValueCompatible>(env: napi_env, name: String, method: @escaping (_ arg0: T0, _ arg1: T1, _ arg2: T2) throws -> Void) -> NAPIProperty {
+    public static func createMethodProperty<T0: NAPIValueCompatible, T1: NAPIValueCompatible, T2: NAPIValueCompatible>(cNapiEnv: napi_env, name: String, method: @escaping (_ arg0: T0, _ arg1: T1, _ arg2: T2) throws -> Void) -> NAPIProperty {
         let swiftBridgeFunction = createSwiftBridgeFunction(method: method)
         let napiArgumentTypes: [NAPIValueType] = [T0.napiValueType, T1.napiValueType, T2.napiValueType]
 
-        return createMethodProperty(env: env, name: name, swiftBridgeFunction: swiftBridgeFunction, napiArgumentTypes: napiArgumentTypes)
+        return createMethodProperty(cNapiEnv: cNapiEnv, name: name, swiftBridgeFunction: swiftBridgeFunction, napiArgumentTypes: napiArgumentTypes)
     }
 
     /* createMethodProperty: 0 to 3 parameter varieties (with return type) */
     // NOTE: we MUST support up to 'maximumArgumentsInNativeFunctions' parameters (from NAPIFunctionHelpers)
 
-    public static func createMethodProperty<TReturn: NAPIValueCompatible>(env: napi_env, name: String, method: @escaping () throws -> TReturn) -> NAPIProperty {
+    public static func createMethodProperty<TReturn: NAPIValueCompatible>(cNapiEnv: napi_env, name: String, method: @escaping () throws -> TReturn) -> NAPIProperty {
         let swiftBridgeFunction = createSwiftBridgeFunction(method: method)
         let napiArgumentTypes: [NAPIValueType] = []
 
-        return createMethodProperty(env: env, name: name, swiftBridgeFunction: swiftBridgeFunction, napiArgumentTypes: napiArgumentTypes, napiReturnType: TReturn.napiValueType)
+        return createMethodProperty(cNapiEnv: cNapiEnv, name: name, swiftBridgeFunction: swiftBridgeFunction, napiArgumentTypes: napiArgumentTypes, napiReturnType: TReturn.napiValueType)
     }
     //
-    public static func createMethodProperty<T0: NAPIValueCompatible, TReturn: NAPIValueCompatible>(env: napi_env, name: String, method: @escaping (_ arg0: T0) throws -> TReturn) -> NAPIProperty {
+    public static func createMethodProperty<T0: NAPIValueCompatible, TReturn: NAPIValueCompatible>(cNapiEnv: napi_env, name: String, method: @escaping (_ arg0: T0) throws -> TReturn) -> NAPIProperty {
         let swiftBridgeFunction = createSwiftBridgeFunction(method: method)
         let napiArgumentTypes: [NAPIValueType] = [T0.napiValueType]
 
-        return createMethodProperty(env: env, name: name, swiftBridgeFunction: swiftBridgeFunction, napiArgumentTypes: napiArgumentTypes, napiReturnType: TReturn.napiValueType)
+        return createMethodProperty(cNapiEnv: cNapiEnv, name: name, swiftBridgeFunction: swiftBridgeFunction, napiArgumentTypes: napiArgumentTypes, napiReturnType: TReturn.napiValueType)
     }
     //
-    public static func createMethodProperty<T0: NAPIValueCompatible, T1: NAPIValueCompatible, TReturn: NAPIValueCompatible>(env: napi_env, name: String, method: @escaping (_ arg0: T0, _ arg1: T1) throws -> TReturn) -> NAPIProperty {
+    public static func createMethodProperty<T0: NAPIValueCompatible, T1: NAPIValueCompatible, TReturn: NAPIValueCompatible>(cNapiEnv: napi_env, name: String, method: @escaping (_ arg0: T0, _ arg1: T1) throws -> TReturn) -> NAPIProperty {
         let swiftBridgeFunction = createSwiftBridgeFunction(method: method)
         let napiArgumentTypes: [NAPIValueType] = [T0.napiValueType, T1.napiValueType]
 
-        return createMethodProperty(env: env, name: name, swiftBridgeFunction: swiftBridgeFunction, napiArgumentTypes: napiArgumentTypes, napiReturnType: TReturn.napiValueType)
+        return createMethodProperty(cNapiEnv: cNapiEnv, name: name, swiftBridgeFunction: swiftBridgeFunction, napiArgumentTypes: napiArgumentTypes, napiReturnType: TReturn.napiValueType)
     }
     //
-    public static func createMethodProperty<T0: NAPIValueCompatible, T1: NAPIValueCompatible, T2: NAPIValueCompatible, TReturn: NAPIValueCompatible>(env: napi_env, name: String, method: @escaping (_ arg0: T0, _ arg1: T1, _ arg2: T2) throws -> TReturn) -> NAPIProperty {
+    public static func createMethodProperty<T0: NAPIValueCompatible, T1: NAPIValueCompatible, T2: NAPIValueCompatible, TReturn: NAPIValueCompatible>(cNapiEnv: napi_env, name: String, method: @escaping (_ arg0: T0, _ arg1: T1, _ arg2: T2) throws -> TReturn) -> NAPIProperty {
         let swiftBridgeFunction = createSwiftBridgeFunction(method: method)
         let napiArgumentTypes: [NAPIValueType] = [T0.napiValueType, T1.napiValueType, T2.napiValueType]
 
-        return createMethodProperty(env: env, name: name, swiftBridgeFunction: swiftBridgeFunction, napiArgumentTypes: napiArgumentTypes, napiReturnType: TReturn.napiValueType)
+        return createMethodProperty(cNapiEnv: cNapiEnv, name: name, swiftBridgeFunction: swiftBridgeFunction, napiArgumentTypes: napiArgumentTypes, napiReturnType: TReturn.napiValueType)
     }
 
     // NOTE: this function is the master "createMethodProperty" function called by all the other "createMethodProperty" functions
-    fileprivate static func createMethodProperty(env: napi_env, name: String, swiftBridgeFunction: @escaping NAPISwiftBridgeFunction, napiArgumentTypes: [NAPIValueType], napiReturnType: NAPIValueType? = nil) -> NAPIProperty {
-        let nameAsNapiValue = NAPIValue.create(env: env, nativeValue: name)
+    fileprivate static func createMethodProperty(cNapiEnv: napi_env, name: String, swiftBridgeFunction: @escaping NAPISwiftBridgeFunction, napiArgumentTypes: [NAPIValueType], napiReturnType: NAPIValueType? = nil) -> NAPIProperty {
+        let nameAsNapiValue = NAPIValue.create(cNapiEnv: cNapiEnv, nativeValue: name)
 
         let napiFunctionData = NAPIFunctionData(swiftBridgeFunction: swiftBridgeFunction, argumentTypes: napiArgumentTypes, returnType: napiReturnType)
         let pointerToNapiFunctionData = Unmanaged.passRetained(napiFunctionData).toOpaque()
 
         // TODO: consider setting the attributes (instead of just using the default settings)
-        let napiPropertyDescriptor = napi_property_descriptor(utf8name: nil, name: nameAsNapiValue.napiValue, method: napiFunctionTrampoline, getter: nil, setter: nil, value: nil, attributes: napi_default, data: pointerToNapiFunctionData)
+        let napiPropertyDescriptor = napi_property_descriptor(utf8name: nil, name: nameAsNapiValue.cNapiValue, method: napiFunctionTrampoline, getter: nil, setter: nil, value: nil, attributes: napi_default, data: pointerToNapiFunctionData)
 
-        let result = NAPIProperty(napiPropertyDescriptor: napiPropertyDescriptor)
+        let result = NAPIProperty(cNapiPropertyDescriptor: napiPropertyDescriptor)
         return result
     }
 

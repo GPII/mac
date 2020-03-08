@@ -10,6 +10,25 @@
 // Department of Education, and you should not assume endorsement by the
 // Federal Government.
 
-public enum NAPIJavaScriptError: Error {
-    case error
+public struct NAPIJavaScriptError: NAPIValueCompatible {
+    public enum NameOption: String {
+        case Error
+        case RangeError
+        case TypeError
+    }
+    
+    public let name: NameOption
+    public let message: String
+    public let code: String?
+    
+    public init(name: NameOption, message: String, code: String? = nil) {
+        self.name = name
+        self.message = message
+        self.code = code
+    }
+}
+extension NAPIJavaScriptError {
+    public static var napiValueType: NAPIValueType {
+        return .error
+    }
 }

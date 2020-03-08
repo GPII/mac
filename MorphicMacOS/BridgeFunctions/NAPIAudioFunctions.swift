@@ -10,92 +10,84 @@
 // Department of Education, and you should not assume endorsement by the
 // Federal Government.
 
-import Foundation
-
 class NAPIAudioFunctions {
     // MARK: - Swift NAPI bridge setup
 
-    static func getFunctionsAsPropertyDescriptors(env: napi_env!) -> [napi_property_descriptor] {
+    static func getFunctionsAsPropertyDescriptors(cNapiEnv: napi_env!) -> [napi_property_descriptor] {
         var result: [napi_property_descriptor] = []
         
         // getAudioVolume
-        result.append(NAPIProperty.createMethodProperty(env: env, name: "getAudioVolume", method: getAudioVolume).napiPropertyDescriptor)
+        result.append(NAPIProperty.createMethodProperty(cNapiEnv: cNapiEnv, name: "getAudioVolume", method: getAudioVolume).cNapiPropertyDescriptor)
 
         // setAudioVolume
-        result.append(NAPIProperty.createMethodProperty(env: env, name: "setAudioVolume", method: setAudioVolume).napiPropertyDescriptor)
+        result.append(NAPIProperty.createMethodProperty(cNapiEnv: cNapiEnv, name: "setAudioVolume", method: setAudioVolume).cNapiPropertyDescriptor)
 
         // getAudioMuteState
-        result.append(NAPIProperty.createMethodProperty(env: env, name: "getAudioMuteState", method: getAudioMuteState).napiPropertyDescriptor)
+        result.append(NAPIProperty.createMethodProperty(cNapiEnv: cNapiEnv, name: "getAudioMuteState", method: getAudioMuteState).cNapiPropertyDescriptor)
 
         // setAudioMuteState
-        result.append(NAPIProperty.createMethodProperty(env: env, name: "setAudioMuteState", method: setAudioMuteState).napiPropertyDescriptor)
+        result.append(NAPIProperty.createMethodProperty(cNapiEnv: cNapiEnv, name: "setAudioMuteState", method: setAudioMuteState).cNapiPropertyDescriptor)
 
         return result
     }
 
     // MARK: - Swift NAPI bridge functions
 
-    public static func getAudioVolume() -> Double {
+    public static func getAudioVolume() throws -> Double {
         guard let defaultAudioOutputDeviceId = MorphicAudio.getDefaultAudioDeviceId() else {
-            // TODO: throw a JavaScript error if we cannot get the default audio device (instead of returning 0.5)
-            NSLog("Could not find default audio output device")
-            return 0.5
+            throw NAPISwiftBridgeJavaScriptThrowableError.error(message: "Could not get default audio device id")
         }
 
         // get the current volume
         guard let volume = MorphicAudio.getVolume(for: defaultAudioOutputDeviceId) else {
-            // TODO: throw a JavaScript error instead
-            NSLog("Could not get volume of output device")
-            return 0.5
+            throw NAPISwiftBridgeJavaScriptThrowableError.error(message: "Could not get volume of default audio device")
         }
 
         return Double(volume)
     }
     
-    public static func getAudioMuteState() -> Bool {
+    public static func getAudioMuteState() throws -> Bool {
         guard let defaultAudioOutputDeviceId = MorphicAudio.getDefaultAudioDeviceId() else {
-            // TODO: throw a JavaScript error if we cannot get the default audio device (instead of returning false)
-            return false
+            throw NAPISwiftBridgeJavaScriptThrowableError.error(message: "Could not get default audio device id")
         }
 
         // also get the mute state
         guard let muteState = MorphicAudio.getMuteState(for: defaultAudioOutputDeviceId) else {
-            // TODO: throw a JavaScript error instead
-            fatalError("Could not get mute state of output device")
-            // an alternate response would be to return false
-//            return false
+            throw NAPISwiftBridgeJavaScriptThrowableError.error(message: "Could not get mute state of default audio device")
         }
 
         return muteState
     }
     
-    public static func setAudioVolume(value: Double) {
+    public static func setAudioVolume(value: Double) throws {
         guard let defaultAudioOutputDeviceId = MorphicAudio.getDefaultAudioDeviceId() else {
-            // TODO: throw a JavaScript error if we cannot get the default audio device (instead of returning 0.5)
-            NSLog("Could not find default audio output device")
-            return
+            throw NAPISwiftBridgeJavaScriptThrowableError.error(message: "Could not get default audio device id")
         }
 
         do {
             try MorphicAudio.setVolume(for: defaultAudioOutputDeviceId, volume: Float(value))
-        } catch let error {
-            // TODO: throw a JavaScript error instead
-            NSLog("Could not set volume of output device; error: \(error)")
+        } catch MorphicAudio.MorphicAudioError.propertyUnavailable {
+            throw NAPISwiftBridgeJavaScriptThrowableError.error(message: "Could not find 'volume' property")
+        } catch MorphicAudio.MorphicAudioError.cannotSetProperty {
+            throw NAPISwiftBridgeJavaScriptThrowableError.error(message: "Could not set 'volume' property")
+        } catch MorphicAudio.MorphicAudioError.coreAudioError(let error) {
+            throw NAPISwiftBridgeJavaScriptThrowableError.error(message: "CoreAudio error: OSStatus(\(error))")
         }
     }
     
-    public static func setAudioMuteState(muteState: Bool) {
+    public static func setAudioMuteState(muteState: Bool) throws {
         guard let defaultAudioOutputDeviceId = MorphicAudio.getDefaultAudioDeviceId() else {
-            // TODO: throw a JavaScript error if we cannot get the default audio device (instead of returning false)
-            NSLog("Could not find default audio output device")
-            return
+            throw NAPISwiftBridgeJavaScriptThrowableError.error(message: "Could not get default audio device id")
         }
 
         do {
             try MorphicAudio.setMuteState(for: defaultAudioOutputDeviceId, muteState: muteState)
-        } catch let error {
-            // TODO: throw a JavaScript error instead
-            NSLog("Could not set mute state of output device; error: \(error)")
+        } catch MorphicAudio.MorphicAudioError.propertyUnavailable {
+            throw NAPISwiftBridgeJavaScriptThrowableError.error(message: "Could not find 'mute state' property")
+        } catch MorphicAudio.MorphicAudioError.cannotSetProperty {
+            throw NAPISwiftBridgeJavaScriptThrowableError.error(message: "Could not set 'mute state' property")
+        } catch MorphicAudio.MorphicAudioError.coreAudioError(let error) {
+            throw NAPISwiftBridgeJavaScriptThrowableError.error(message: "CoreAudio error: OSStatus(\(error))")
         }
     }
 }

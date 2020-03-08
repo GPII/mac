@@ -10,16 +10,14 @@
 // Department of Education, and you should not assume endorsement by the
 // Federal Government.
 
-import Foundation
-
 class NAPIWindowFunctions {
     // MARK: - Swift NAPI bridge setup
 
-    static func getFunctionsAsPropertyDescriptors(env: napi_env!) -> [napi_property_descriptor] {
+    static func getFunctionsAsPropertyDescriptors(cNapiEnv: napi_env!) -> [napi_property_descriptor] {
         var result: [napi_property_descriptor] = []
         
-//        // getDisplayModes
-//        result.append(NAPIProperty.createMethodProperty(env: env, name: "getAllDisplayModes", method: getAllDisplayModes).napiPropertyDescriptor)
+        // getWindowOwnerNameAndProcessIdOfTopmostWindow
+        result.append(NAPIProperty.createMethodProperty(cNapiEnv: cNapiEnv, name: "getWindowOwnerNameAndProcessIdOfTopmostWindow", method: getWindowOwnerNameAndProcessIdOfTopmostWindow).cNapiPropertyDescriptor)
 
         return result
     }
@@ -37,15 +35,14 @@ class NAPIWindowFunctions {
         ]
     }
     
-    public static func getWindowOwnerNameAndProcessIdOfTopmostWindow() -> NAPIWindowOwnerNameAndProcessId {
+    public static func getWindowOwnerNameAndProcessIdOfTopmostWindow() throws -> NAPIWindowOwnerNameAndProcessId {
         guard let (windowOwnerName, processId) = MorphicWindow.getWindowOwnerNameAndProcessIdOfTopmostWindow() else {
-            // TODO: consider throwing JavaScript error
-            fatalError("Could not get window owner name and process iD for topmost window")
+            throw NAPISwiftBridgeJavaScriptThrowableError.error(message: "Could not get window owner name and process id for topmost window")
         }
 
         guard let processIdAsDouble = Double(exactly: processId) else {
-            fatalError("processId cannot be represented as a 64-bit floating point value")
-        }        
+            throw NAPISwiftBridgeJavaScriptThrowableError.rangeError(message: "Argument 'processId' cannot be represented as a 64-bit floating point value")
+        }
         
         let result = NAPIWindowOwnerNameAndProcessId(windowOwnerName: windowOwnerName, processId: processIdAsDouble)
         return result

@@ -15,11 +15,11 @@ import Foundation
 class NAPIInputFunctions {
     // MARK: - Swift NAPI bridge setup
 
-    static func getFunctionsAsPropertyDescriptors(env: napi_env!) -> [napi_property_descriptor] {
+    static func getFunctionsAsPropertyDescriptors(cNapiEnv: napi_env!) -> [napi_property_descriptor] {
         var result: [napi_property_descriptor] = []
         
         // sendKey
-        result.append(NAPIProperty.createMethodProperty(env: env, name: "sendKey", method: sendKey).napiPropertyDescriptor)
+        result.append(NAPIProperty.createMethodProperty(cNapiEnv: cNapiEnv, name: "sendKey", method: sendKey).cNapiPropertyDescriptor)
         
         return result
     }
@@ -39,10 +39,9 @@ class NAPIInputFunctions {
         ]
     }
 
-    public static func sendKey(_ keyCode: Double, _ keyOptions: NAPIKeyOptions, _ processId: Double) {
+    public static func sendKey(_ keyCode: Double, _ keyOptions: NAPIKeyOptions, _ processId: Double) throws {
         guard let keyCodeAsInt16 = Int16(exactly: keyCode) else {
-            // TODO: consider throwing a JavaScript error, since the provided keyCode could not be converted
-            fatalError("Argument 'keyCode' is not valid and could not be converted to the corresponding native type")
+            throw NAPISwiftBridgeJavaScriptThrowableError.rangeError(message: "Argument 'keyCode' is out of range")
         }
 
         var keyOptionsRawValue: UInt32 = 0
@@ -65,8 +64,7 @@ class NAPIInputFunctions {
         let keyOptionsAsKeyOptions = MorphicInput.KeyOptions(napiKeyOptions: keyOptions)
         
         guard let processIdAsInt = Int(exactly: processId) else {
-            // TODO: consider throwing a JavaScript error, since the provided processId could not be converted
-            fatalError("Argument 'processId' is not valid and could not be converted to the corresponding native type")
+            throw NAPISwiftBridgeJavaScriptThrowableError.rangeError(message: "Argument 'processId' is out of range")
         }
 
         // NOTE: key codes may be different on non-EN_US keyboards; we may want to add a mapping capability to choose the proper "local" virtual keycodes based on "universal" metacodes
@@ -74,9 +72,7 @@ class NAPIInputFunctions {
 
         let sendKeyResult = MorphicInput.sendKey(keyCode: keyCodeACGKeyCode, keyOptions: keyOptionsAsKeyOptions, toProcessId: processIdAsInt)
         if sendKeyResult == false {
-            // if we could not send the key event, log this error
-            // TODO: consider returning a JavaScript error
-            NSLog("Could not send key event.")
+            throw NAPISwiftBridgeJavaScriptThrowableError.error(message: "Could not send key code")
         }
     }
 }
