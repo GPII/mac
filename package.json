@@ -1,0 +1,34 @@
+{
+  "name": "gpii-macos",
+  "description": "Components of the GPII personalization infrastructure for use on Apple's macOS",
+  "version": "0.3.0",
+  "author": "Raising the Floor -- US Inc.",
+  "bugs": {
+    "url": "http://issues.gpii.net/browse/GPII"
+  },
+  "homepage": "http://gpii.net/",
+  "scripts": {
+    "build": "xcodebuild clean -configuration Release && xcodebuild build -configuration Release && mv build/Release/libMorphicMacOS.dylib build/MorphicMacOS.node",
+    "build:dev": "xcodebuild clean -configuration Release && xcodebuild build -configuration Debug && mv build/Debug/libMorphicMacOS.dylib build/MorphicMacOS.node",
+    "postinstall": "npm run build",
+    "test": "exit 0"
+  },
+  "dependencies": {
+    "gpii-universal": "github:christopher-rtf/universal#9a15229e"
+  },
+  "os": [
+    "darwin"
+  ],
+  "license": "BSD-3-Clause",
+  "keywords": [
+    "gpii"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GPII/gpii-macos.git"
+  },
+  "main": "./gpii.js",
+  "engines": {
+    "node": ">=10.16.3"
+  }
+}
